@@ -196,11 +196,19 @@ window.Ohana = (() => {
     }
 
     if (gameState.game?.status === 'ended') {
-      const winner = [...(gameState.teams || [])].sort((a, b) => b.points - a.points)[0];
+      const sorted = [...(gameState.teams || [])].sort((a, b) => b.points - a.points);
+      const winner = sorted[0];
+      const podium = sorted.slice(0, 3);
       center.innerHTML = `<div class="center-ended">
-        <div class="game-end-trophy">🏆</div>
         <h2 class="game-end-title">Game Complete</h2>
-        <p class="center-sub">${winner ? `${escapeHtml(winner.name)} leads with ${winner.points} points.` : 'Thanks for playing Ohana Monopoly.'}</p>
+        <div class="game-end-winner" style="--team-color:${escapeHtml(winner?.color || '#0176d3')}">
+          <span class="game-end-trophy">🏆</span>
+          <span class="game-end-winner-name">${escapeHtml(winner?.name || 'Team')}</span>
+          <span class="game-end-winner-pts">${winner?.points || 0} pts</span>
+        </div>
+        <div class="game-end-podium">
+          ${podium.map((t, i) => `<div class="podium-entry"><span class="podium-rank">${i + 1}${i === 0 ? 'st' : i === 1 ? 'nd' : 'rd'}</span><span class="podium-name" style="--team-color:${escapeHtml(t.color)}">${escapeHtml(t.name)}</span><span class="podium-pts">${t.points}pts</span></div>`).join('')}
+        </div>
       </div>`;
       return;
     }
@@ -304,12 +312,15 @@ window.Ohana = (() => {
 
     if (gameState.game?.status === 'active') {
       const activeTeam = gameState.teams[gameState.game.currentTurnIndex];
-      center.innerHTML = `<div class="center-roll" style="--team-color:${escapeHtml(activeTeam?.color || '#0176d3')}">
-        <div class="roll-team-dot"></div>
-        <h2 class="roll-team-name">${escapeHtml(activeTeam?.name || 'Team')}</h2>
-        <p class="roll-subtitle">Roll the Dice!</p>
-      </div>`;
-      return;
+      const finished = gameState.game?.finished || [];
+      if (activeTeam && !finished.includes(activeTeam.id)) {
+        center.innerHTML = `<div class="center-roll" style="--team-color:${escapeHtml(activeTeam?.color || '#0176d3')}">
+          <div class="roll-team-dot"></div>
+          <h2 class="roll-team-name">${escapeHtml(activeTeam?.name || 'Team')}</h2>
+          <p class="roll-subtitle">Roll the Dice!</p>
+        </div>`;
+        return;
+      }
     }
 
     center.innerHTML = `<div class="center-default">

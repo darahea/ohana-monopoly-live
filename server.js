@@ -413,6 +413,9 @@ async function moveActiveTeamAnimated(dice1, dice2) {
             state.game.spotlight = null;
             addLog(`모든 팀이 ${maxR}바퀴를 완료하여 게임이 자동 종료되었습니다.`, 'system');
             emitAndSave();
+          } else {
+            advanceTurn({ clearSpotlight: true, force: true });
+            emitAndSave();
           }
           return;
         }

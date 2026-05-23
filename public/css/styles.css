@@ -1015,15 +1015,57 @@ a { color: inherit; }
   background: linear-gradient(165deg, #032d60 0%, #0176d3 100%);
   color: #fff;
 }
-.game-end-trophy {
-  font-size: 72px;
-  margin-bottom: 8px;
-}
 .game-end-title {
   font-family: var(--font-en);
   font-size: 44px;
-  margin: 0 0 8px;
+  margin: 0 0 20px;
   letter-spacing: -0.02em;
+}
+.game-end-winner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(255,255,255,0.15);
+  border: 3px solid var(--team-color);
+  border-radius: 16px;
+  padding: 16px 24px;
+  margin-bottom: 20px;
+}
+.game-end-trophy { font-size: 40px; }
+.game-end-winner-name {
+  font-family: var(--font-en);
+  font-size: 32px;
+  font-weight: 800;
+}
+.game-end-winner-pts {
+  font-size: 24px;
+  opacity: 0.9;
+  margin-left: auto;
+}
+.game-end-podium {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  max-width: 320px;
+}
+.podium-entry {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 18px;
+}
+.podium-rank {
+  font-weight: 700;
+  width: 36px;
+}
+.podium-name {
+  font-weight: 600;
+  color: var(--team-color);
+}
+.podium-pts {
+  margin-left: auto;
+  opacity: 0.85;
 }
 .center-title { display: flex; flex-direction: column; align-items: center; gap: 4px; }
 .center-title .script { font-family: var(--font-en); font-size: 22px; font-style: italic; opacity: .85; }
