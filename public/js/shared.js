@@ -108,7 +108,7 @@ window.Ohana = (() => {
     const teams = teamsOnSpace(gameState, index);
     const movingTeamId = gameState.game?.moving?.teamId;
 
-    const currentTeamId = gameState.teams[gameState.game?.currentTurnIndex]?.id;
+    const currentTeamId = gameState.game?.status === 'active' ? gameState.teams[gameState.game?.currentTurnIndex]?.id : null;
     const tokenHtml = teams.map((team) => {
       const isMoving = movingTeamId === team.id;
       const isActive = !isMoving && team.id === currentTeamId;
@@ -181,13 +181,14 @@ window.Ohana = (() => {
     const activeMiniGame = gameState.game?.activeMiniGame;
     const moving = gameState.game?.moving;
 
-    if (moving) {
+    if (moving && spotlight?.type !== 'start') {
       const team = teamById(gameState, moving.teamId);
       const space = spaceByIndex(gameState, moving.current);
       center.innerHTML = `<div class="center-default">
         <div>
-          <div class="center-title"><span class="script">Moving</span><span class="banner-word">${escapeHtml(team?.shortName || 'Team')}</span></div>
-          <div class="center-sub">${escapeHtml(team?.name || 'Team')} · Step ${moving.step} of ${moving.total} · ${escapeHtml(space?.label || space?.name || '')}</div>
+          <div class="center-title"><span class="script">Moving</span></div>
+          <div class="center-sub">Step ${moving.step} of ${moving.total}</div>
+          <div class="center-sub">${escapeHtml(space?.label || space?.name || '')}</div>
           <img src="/assets/astro.png" alt="Astro mascot" class="astro" />
         </div>
       </div>`;
@@ -200,6 +201,30 @@ window.Ohana = (() => {
         <div class="game-end-trophy">🏆</div>
         <h2 class="game-end-title">Game Complete</h2>
         <p class="center-sub">${winner ? `${escapeHtml(winner.name)} leads with ${winner.points} points.` : 'Thanks for playing Ohana Monopoly.'}</p>
+      </div>`;
+      return;
+    }
+
+    if (spotlight?.type === 'team_finished') {
+      const team = teamById(gameState, spotlight.teamId);
+      center.innerHTML = `<div class="center-roll" style="--team-color:${escapeHtml(team?.color || '#0176d3')}">
+        <div>
+          <p class="center-sub">${escapeHtml(team?.name || 'Team')} finished all rounds!</p>
+          <img src="/assets/astro.png" alt="Astro mascot" class="astro" />
+        </div>
+      </div>`;
+      return;
+    }
+
+    if (spotlight?.type === 'start') {
+      const team = teamById(gameState, spotlight.teamId);
+      const laps = gameState.game?.laps?.[team?.id] || 0;
+      center.innerHTML = `<div class="center-roll" style="--team-color:${escapeHtml(team?.color || '#0176d3')}">
+        <div>
+          <p class="center-sub">${escapeHtml(team?.name || 'Team')} completed R${laps}!</p>
+          <p class="center-sub">+${gameState.settings.passStartPoints} pts bonus</p>
+          <img src="/assets/astro.png" alt="Astro mascot" class="astro" />
+        </div>
       </div>`;
       return;
     }
@@ -261,19 +286,30 @@ window.Ohana = (() => {
           </div>
           <div class="city-copy">
             <div class="city-stats-row">
-              <div class="city-stat big"><span>COST</span><strong>${city.cost}</strong></div>
-              <div class="city-stat big"><span>FEE</span><strong>${city.fee}</strong></div>
+              <div class="city-stat big"><span>PURCHASE</span><strong>${city.cost}</strong></div>
+              <div class="city-stat big"><span>TOLL FEE</span><strong>${city.fee}</strong></div>
             </div>
             <div class="city-meta-row">
-              <p class="center-sub">${landingTeam ? `${escapeHtml(landingTeam.name)} arrived here.` : 'A team arrived here.'}</p>
-              ${owner
-                ? `<span class="owner-line"><span class="owner-dot" style="--team-color:${escapeHtml(owner.color)}"></span>Tower owned by ${escapeHtml(owner.name)}</span>`
-                : '<span class="owner-line">No tower yet.</span>'}
+              ${landingTeam && !owner
+                ? `<p class="center-sub"><span class="fee-team-chip" style="--team-color:${escapeHtml(landingTeam.color)}">${escapeHtml(landingTeam.name)}</span> has ${landingTeam.points}pts ${landingTeam.points >= city.cost ? '→ Can buy!' : '→ Not enough'}</p>`
+                : landingTeam && owner
+                  ? `<p class="center-sub"><span class="owner-dot" style="--team-color:${escapeHtml(owner.color)}"></span> Tower owned by ${escapeHtml(owner.name)}</p>`
+                  : '<p class="center-sub">No tower yet.</p>'}
             </div>
           </div>
         </div>`;
         return;
       }
+    }
+
+    if (gameState.game?.status === 'active') {
+      const activeTeam = gameState.teams[gameState.game.currentTurnIndex];
+      center.innerHTML = `<div class="center-roll" style="--team-color:${escapeHtml(activeTeam?.color || '#0176d3')}">
+        <div class="roll-team-dot"></div>
+        <h2 class="roll-team-name">${escapeHtml(activeTeam?.name || 'Team')}</h2>
+        <p class="roll-subtitle">Roll the Dice!</p>
+      </div>`;
+      return;
     }
 
     center.innerHTML = `<div class="center-default">
