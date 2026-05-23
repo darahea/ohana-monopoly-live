@@ -231,7 +231,7 @@ function emitAndSave() {
 function applyTurnFromCounter() {
   const n = state.teams.length;
   const T = state.game.turnsPlayed;
-  state.game.currentTurnIndex = ((T % n) + Math.floor(T / n)) % n;
+  state.game.currentTurnIndex = T % n;
   state.game.round = Math.floor(T / n) + 1;
 }
 
