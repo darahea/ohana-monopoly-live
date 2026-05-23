@@ -227,7 +227,7 @@ window.Ohana = (() => {
     if (spotlight?.type === 'start') {
       const team = teamById(gameState, spotlight.teamId);
       const laps = gameState.game?.laps?.[team?.id] || 0;
-      center.innerHTML = `<div class="center-roll" style="--team-color:${escapeHtml(team?.color || '#0176d3')}">
+      center.innerHTML = `<div class="center-start-pass">
         <div>
           <p class="center-sub">${escapeHtml(team?.name || 'Team')} completed R${laps}!</p>
           <p class="center-sub">+${gameState.settings.passStartPoints} pts bonus</p>

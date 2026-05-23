@@ -24,7 +24,7 @@
   --mini-grad-3: #00B3FF;
 
   /* START tile */
-  --start-bg: #0E1525;
+  --start-bg: #00A1E0;
   --start-accent: #FFAB00;
 
   /* Neutrals */
@@ -976,7 +976,7 @@ a { color: inherit; }
 .tile.mini-tile .tile-name.mini-name { font-size: 10px; line-height: 1; }
 
 /* =========================== CENTER SPOTLIGHT =========================== */
-.center-roll, .center-default, .center-mini-static, .center-ended, .center-city {
+.center-start-pass, .center-roll, .center-default, .center-mini-static, .center-ended, .center-city {
   width: 100%;
   height: 100%;
   display: flex;
@@ -986,6 +986,10 @@ a { color: inherit; }
   text-align: center;
   padding: 20px;
   position: relative;
+}
+.center-start-pass {
+  background: #00A1E0;
+  color: #fff;
 }
 .center-roll {
   background: var(--team-color, #0176d3);
