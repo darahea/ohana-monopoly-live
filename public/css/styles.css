@@ -686,10 +686,23 @@ a { color: inherit; }
 .tile.is-landing { box-shadow: 0 0 0 3px #FFAB00, 0 12px 30px rgba(255, 171, 0, .35); transform: translateY(-2px); }
 .tile.is-moving { box-shadow: 0 0 0 3px var(--sf-blue), 0 12px 30px rgba(1, 118, 211, .35); }
 
-/* Owned city: prominent team-colored outline + colored shelf */
+/* Owned city: full team-color background */
 .tile-owned {
-  outline: 4px solid var(--owner-color, transparent);
-  outline-offset: -4px;
+  background: var(--owner-color, transparent) !important;
+}
+.tile-owned .tile-body {
+  color: #fff;
+}
+.tile-owned .tile-name,
+.tile-owned .tile-subtitle {
+  color: #fff;
+}
+.tile-owned.tile-owner-light .tile-body {
+  color: #000;
+}
+.tile-owned.tile-owner-light .tile-name,
+.tile-owned.tile-owner-light .tile-subtitle {
+  color: #000;
 }
 .tile-owned .tile-shelf {
   background: var(--owner-color, #fff);
@@ -807,18 +820,32 @@ a { color: inherit; }
 }
 .tile-owner-badge .owner-label { font-size: 11px; }
 
-/* Tile types */
-.tile-tier-high { background: var(--tier-high); }
-.tile-tier-mid  { background: var(--tier-mid); }
-.tile-tier-low  { background: var(--tier-low); }
+/* Tile types — unowned cities all use light blue style */
+.tile-tier-high,
+.tile-tier-mid,
+.tile-tier-low { background: var(--tier-low); }
 
-/* LOW (light blue) needs dark text for contrast */
+.tile-tier-high .tile-name,
+.tile-tier-high .tile-subtitle,
+.tile-tier-mid .tile-name,
+.tile-tier-mid .tile-subtitle,
 .tile-tier-low .tile-name,
 .tile-tier-low .tile-subtitle {
   color: #032D60;
 }
-.tile-tier-low .tile-subtitle {
+.tile-tier-low .tile-subtitle,
+.tile-tier-mid .tile-subtitle,
+.tile-tier-high .tile-subtitle {
   opacity: 0.75;
+}
+/* When owned, override dark text to white */
+.tile-owned .tile-name,
+.tile-owned .tile-subtitle {
+  color: #fff !important;
+}
+.tile-owned.tile-owner-light .tile-name,
+.tile-owned.tile-owner-light .tile-subtitle {
+  color: #000 !important;
 }
 
 .tile-mini {

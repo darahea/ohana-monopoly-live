@@ -59,6 +59,15 @@ window.Ohana = (() => {
   const teamsOnSpace = (gameState, index) => (gameState?.teams || []).filter((team) => Number(team.position) === Number(index));
   const gridPosition = (index) => GRID_POSITIONS[Number(index)] || [1, 1];
 
+  function isLightTeamColor(hex) {
+    if (!hex) return false;
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+    return luminance > 0.75;
+  }
+
   function gameStatusLabel(status) {
     if (status === 'active') return '진행 중';
     if (status === 'ended') return '종료';
@@ -109,11 +118,13 @@ window.Ohana = (() => {
 
     const tileTypeClass = `tile-${space.type}`;
     const tierClass = space.type === 'city' ? `tile-tier-${space.tier || 'low'}` : '';
+    const isLightColor = owner && isLightTeamColor(owner.color);
     const classes = [
       'tile',
       tileTypeClass,
       tierClass,
       owner ? 'tile-owned' : '',
+      isLightColor ? 'tile-owner-light' : '',
       Number(lastLandingIndex) === index ? 'is-landing' : '',
       Number(movingIndex) === index ? 'is-moving' : '',
       mini ? 'mini-tile' : ''
