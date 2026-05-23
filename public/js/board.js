@@ -13,7 +13,8 @@
   } = window.Ohana;
 
   function render(gameState) {
-    const activeTeam = gameState.teams[gameState.game.currentTurnIndex];
+    const isActive = gameState.game.status === 'active';
+    const activeTeam = isActive ? gameState.teams[gameState.game.currentTurnIndex] : null;
     renderCurrentTurnCard(gameState, activeTeam);
     renderRanking(gameState, activeTeam);
     renderBoard({ gameState, layerId: 'tilesLayer', centerId: 'centerSpotlight' });
@@ -31,9 +32,15 @@
   }
 
   function renderCurrentTurnCard(gameState, activeTeam) {
+    const maxRounds = gameState.settings?.maxRounds || '—';
+
+    if (!activeTeam) {
+      $('roundDisplay').innerHTML = `Round — / ${maxRounds}`;
+      $('currentTurnCard').innerHTML = '';
+      return;
+    }
+
     const dice = gameState.game.lastDice;
-    const round = gameState.game.round;
-    const status = gameStatusLabel(gameState.game.status);
     const position = formatPosition(gameState, activeTeam?.position || 0);
     const moving = gameState.game.moving;
 
@@ -47,8 +54,9 @@
       ? `이동 중 · ${moving.step}/${moving.total}`
       : position;
 
+    const currentLap = (gameState.game?.laps?.[activeTeam?.id] || 0) + 1;
+    $('roundDisplay').innerHTML = `Round ${currentLap} / ${maxRounds}`;
     $('currentTurnCard').innerHTML = `
-      <div class="ct-eyebrow">현재 턴 · R${round} · ${status}</div>
       <div class="ct-main">
         <span class="ct-dot" style="--team-color:${escapeHtml(activeTeam?.color || '#0176d3')}"></span>
         <div class="ct-text">
@@ -66,15 +74,18 @@
       .map((team, originalIdx) => ({ team, originalIdx }))
       .sort((a, b) => b.team.points - a.team.points || a.originalIdx - b.originalIdx);
 
+    const finished = gameState.game?.finished || [];
     $('rankingList').innerHTML = ranked.map(({ team }, rank) => {
       const isCurrent = activeTeam?.id === team.id;
+      const isFinished = finished.includes(team.id);
       const towers = gameState.board.filter((s) => s.type === 'city' && s.ownerTeamId === team.id).length;
       const rankLabel = ordinal(rank + 1);
-      return `<div class="rank-row ${isCurrent ? 'is-current' : ''}" style="--team-color:${escapeHtml(team.color)}">
+      const rowClass = isFinished ? 'is-finished' : isCurrent ? 'is-current' : '';
+      return `<div class="rank-row ${rowClass}" style="--team-color:${escapeHtml(team.color)}">
         <div class="rank-badge">${rankLabel}</div>
         <div class="rank-team">
           <strong>${escapeHtml(team.name)}</strong>
-          <span>${towers}개 타워</span>
+          <span>${towers}개 타워${isFinished ? ' · 완료' : ''}</span>
         </div>
         <div class="rank-points"><strong>${team.points}</strong><span>pts</span></div>
       </div>`;

@@ -56,6 +56,18 @@
               <button class="ghost-button" id="resetGameBtn" type="button">↻ 게임 리셋</button>
             </div>
             <div class="button-row wrap spacing-top">
+              <label class="dice-input-label">총 라운드 수
+                <select id="maxRoundsSelect">
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3" selected>3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                </select>
+              </label>
+              <button class="ghost-button" id="setMaxRoundsBtn" type="button">라운드 설정</button>
+            </div>
+            <div class="button-row wrap spacing-top">
               <button class="ghost-button" id="previousTurnBtn" type="button">← 이전 팀</button>
               <button class="ghost-button" id="nextTurnBtn" type="button">다음 팀 →</button>
               <button class="ghost-button" id="forceNextTurnBtn" type="button">강제 진행</button>
