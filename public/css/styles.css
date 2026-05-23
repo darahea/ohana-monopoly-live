@@ -837,7 +837,12 @@ a { color: inherit; }
   text-shadow: none;
 }
 .tile-mini .tile-shelf {
-  background: #FFFFFF;
+  background: transparent;
+  position: absolute;
+  bottom: 4px;
+  left: 4px;
+  right: 4px;
+  z-index: 3;
 }
 .tile-mini .token-dot {
   border-color: rgba(15, 23, 42, 0.20);
