@@ -601,6 +601,7 @@ a { color: inherit; }
   min-height: 0;
 }
 .rank-row {
+  position: relative;
   display: grid;
   grid-template-columns: 40px 1fr auto;
   align-items: center;
@@ -613,6 +614,7 @@ a { color: inherit; }
   transition: background 0.15s;
 }
 .rank-row.is-current {
+  grid-template-columns: 40px 1fr auto auto;
   background: rgba(255, 255, 255, 0.18);
   box-shadow: 0 0 0 2px var(--team-color, var(--sf-blue)) inset, 0 4px 12px rgba(0, 0, 0, 0.18);
 }
@@ -620,31 +622,36 @@ a { color: inherit; }
   border: 2px solid var(--team-color, var(--sf-blue));
   opacity: 0.85;
 }
+.rank-astro {
+  width: 32px;
+  height: auto;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+}
 .rank-badge {
   font-family: var(--font-en);
-  font-size: 14px;
+  font-size: 18px;
   font-weight: 700;
   text-align: center;
   background: rgba(255, 255, 255, 0.18);
   border-radius: 8px;
-  padding: 4px 0;
+  padding: 6px 0;
 }
 .rank-team { min-width: 0; }
 .rank-team strong {
   display: block;
   font-family: var(--font-en);
-  font-size: 13px;
+  font-size: 18px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.rank-team span { font-size: 10px; opacity: 0.75; }
+.rank-team span { font-size: 14px; opacity: 0.75; }
 .rank-points {
   text-align: right;
   font-family: var(--font-en);
 }
-.rank-points strong { font-size: 22px; font-weight: 700; }
-.rank-points span { font-size: 10px; opacity: 0.75; margin-left: 3px; }
+.rank-points strong { font-size: 28px; font-weight: 700; }
+.rank-points span { font-size: 14px; opacity: 0.75; margin-left: 3px; }
 
 .board-stage {
   display: flex;

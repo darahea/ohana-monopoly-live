@@ -92,6 +92,7 @@
           <strong>${escapeHtml(team.name)}</strong>
           <span>${towers} tower${towers !== 1 ? 's' : ''}${isFinished ? ' · Done' : ''}</span>
         </div>
+        ${isCurrent ? '<img src="/assets/astro.png" alt="" class="rank-astro" />' : ''}
         <div class="rank-points"><strong>${team.points}</strong><span>pts</span></div>
       </div>`;
     }).join('');
