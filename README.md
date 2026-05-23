@@ -1,8 +1,8 @@
 # Ohana Monopoly — Live Game Board + Admin Console
 
-This package contains a real browser-based event game for six teams.
+A real-time browser-based event game for 2–10 teams.
 
-There are only two spaces:
+There are only two screens:
 
 - **Live Game Board**: `http://localhost:3000/`
 - **Admin Console**: `http://localhost:3000/admin`
@@ -16,46 +16,54 @@ npm install
 npm start
 ```
 
-Then open:
+For auto-restart on file changes:
 
-```text
-Live Game Board: http://localhost:3000/
-Admin Console:   http://localhost:3000/admin
+```bash
+npm run dev
 ```
 
 ## Main rules implemented
 
-- Six teams start with 20 points each.
-- The admin enters values from the physical dice.
-- The active team moves one tile at a time on the live board.
+- 2–10 teams start with 5 points each.
+- The admin enters two dice values (1–6 each); the team moves by the total (2–12).
+- The active team moves one tile at a time on the live board with animation.
 - Passing or landing on START gives +5 points.
-- Landing on a Mini Game tile triggers “It’s Game Time” for all teams.
+- Landing on a Mini Game tile triggers a mini game for all teams.
 - Mini Game awards are: 1st +20, 2nd +10, 3rd +5.
 - Landing on an unowned city lets the active team buy a tower only if their current points are at least the tower cost.
-- Landing on another team’s tower city charges the city fee. Passing over a tower city does not charge a fee.
-- If a team cannot cover a tower fee, its point balance can go negative. There is no bankruptcy state.
-- A team may sell towers only during that team’s active turn.
+- Landing on another team's tower city charges the toll fee. Passing over a tower city does not charge a fee.
+- If a team cannot cover a toll fee, its point balance can go negative. There is no bankruptcy state.
+- A team may sell towers only during that team's active turn.
 - Selling a tower refunds half of its original cost.
-- The live board keeps teams in the original game order; the badge number shows each team’s current rank.
+- The admin sets the total number of rounds (laps) before game start (1–5).
+- When a team completes all rounds, it is removed from the board and marked as "Done" on the leaderboard.
+- Completed teams are skipped in turn order.
+- The game ends automatically when all teams finish their rounds.
+- Turn order is always fixed: Team 1 → 2 → 3 → ... → 6.
 
 ## City list
 
-1. San Francisco (HQ) — Cost 10, Fee 20
-2. New York (Tower) — Cost 6, Fee 12
-3. London (Tower) — Cost 6, Fee 12
-4. Tokyo (Tower) — Cost 10, Fee 20
-5. Sydney (Tower) — Cost 6, Fee 12
-6. Seoul (Hometown) — Cost 10, Fee 20
-7. Taipei — Cost 6, Fee 12
-8. Singapore — Cost 4, Fee 8
-9. Paris — Cost 4, Fee 8
-10. Barcelona — Cost 4, Fee 8
-11. Toronto — Cost 4, Fee 8
-12. Chicago — Cost 4, Fee 8
+| # | City | Tier | Cost | Toll Fee |
+|---|------|------|------|----------|
+| 1 | San Francisco (HQ) | $$$ | 10 | 8 |
+| 2 | Singapore | $ | 4 | 3 |
+| 3 | London (Tower) | $$ | 6 | 5 |
+| 4 | Dubai | $$ | 6 | 5 |
+| 5 | Paris | $ | 4 | 3 |
+| 6 | Sydney (Tower) | $$ | 6 | 5 |
+| 7 | Barcelona | $ | 4 | 3 |
+| 8 | Taipei | $$ | 6 | 5 |
+| 9 | Toronto | $ | 4 | 3 |
+| 10 | New York (Tower) | $$ | 6 | 5 |
+| 11 | Berlin | $ | 4 | 3 |
+| 12 | Chicago | $ | 4 | 3 |
+| 13 | Tokyo (Tower) | $$$ | 10 | 8 |
+| 14 | Dublin | $$$ | 10 | 8 |
+| 15 | Seoul (Hometown) | $$$ | 10 | 8 |
 
 ## Replacing photos
 
-City images are included in:
+City images are located in:
 
 ```text
 public/assets/cities/
