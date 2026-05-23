@@ -318,7 +318,9 @@ function setLandingSpotlight(team, landing, newPosition) {
   }
 
   if (landing.type === 'start') {
-    state.game.spotlight = { type: 'start', teamId: team.id, at: now() };
+    if (!state.game.spotlight || state.game.spotlight.type !== 'start') {
+      state.game.spotlight = { type: 'start', teamId: team.id, at: now() };
+    }
     addLog(`${team.name}이(가) START에 착지했습니다.`, 'start');
   }
 
@@ -423,7 +425,9 @@ async function moveActiveTeamAnimated(dice1, dice2) {
         state.game.spotlight = { type: 'start', teamId: team.id, at: now() };
         emitAndSave();
         await delay(2000);
-        state.game.spotlight = null;
+        if (step < total) {
+          state.game.spotlight = null;
+        }
       }
       emitAndSave();
       await delay(MOVE_STEP_MS);
