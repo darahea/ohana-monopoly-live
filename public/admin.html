@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Ohana Monopoly | 어드민 콘솔</title>
+  <link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body class="page admin-page">
+  <header class="topbar">
+    <div class="brand">
+      <img src="/assets/salesforce_logo.png" alt="Salesforce" class="brand-cloud" />
+      <div class="brand-copy">
+        <h1>Ohana Monopoly</h1>
+        <p>어드민 콘솔</p>
+      </div>
+    </div>
+    <div class="top-actions">
+      <a class="ghost-button link-button" href="/" target="_blank" rel="noreferrer">라이브 보드 열기</a>
+    </div>
+  </header>
+
+  <main id="adminView" class="admin-shell">
+    <aside class="sidebar admin-sidebar">
+      <div class="side-header">
+        <div>
+          <span class="eyebrow light">게임 현황</span>
+          <h2>컨트롤 센터</h2>
+        </div>
+        <span class="badge" id="adminStatusPill">준비</span>
+      </div>
+      <div id="adminSummary" class="admin-summary"></div>
+      <div class="astro-panel">
+        <img src="/assets/astro.png" alt="Astro mascot" />
+        <h3>Ohana Monopoly</h3>
+        <p>이 콘솔로 보드 운영, 주사위 입력, 포인트 관리를 진행하세요.</p>
+      </div>
+      <div class="powered">Powered by <img src="/assets/salesforce_logo.png" alt="Salesforce" /></div>
+    </aside>
+
+    <section class="admin-main">
+      <div class="tabs-bar card">
+        <button class="tab active" data-tab="overview" type="button">개요</button>
+        <button class="tab" data-tab="teams" type="button">팀</button>
+        <button class="tab" data-tab="board" type="button">보드와 타워</button>
+        <button class="tab" data-tab="log" type="button">로그</button>
+      </div>
+
+      <section class="tab-panel" data-panel="overview">
+        <div class="admin-grid two-col">
+          <article class="admin-card card">
+            <h2>1. 게임 제어</h2>
+            <div class="button-row wrap">
+              <button class="success-button" id="startGameBtn" type="button">▶ 게임 시작</button>
+              <button class="danger-button" id="endGameBtn" type="button">■ 게임 종료</button>
+              <button class="ghost-button" id="resetGameBtn" type="button">↻ 게임 리셋</button>
+            </div>
+            <div class="button-row wrap spacing-top">
+              <button class="ghost-button" id="previousTurnBtn" type="button">← 이전 팀</button>
+              <button class="ghost-button" id="nextTurnBtn" type="button">다음 팀 →</button>
+              <button class="ghost-button" id="forceNextTurnBtn" type="button">강제 진행</button>
+              <button class="ghost-button" id="clearSpotlightBtn" type="button">스포트라이트 제거</button>
+            </div>
+            <p class="muted">"이전 팀" 버튼은 다음 팀을 실수로 누른 경우 되돌리기에 사용하세요. 미니게임을 건너뛰거나 막힌 동작을 넘어갈 때만 "강제 진행"을 사용하세요.</p>
+          </article>
+
+          <article class="admin-card card">
+            <h2>2. 주사위 입력 (실제 주사위 2개)</h2>
+            <div id="activeTeamMini" class="active-team-mini"></div>
+            <form id="diceForm" class="dice-form">
+              <label class="dice-input-label">주사위 1
+                <input id="dice1" type="number" min="1" max="6" value="1" />
+              </label>
+              <label class="dice-input-label">주사위 2
+                <input id="dice2" type="number" min="1" max="6" value="1" />
+              </label>
+              <div class="dice-total-display">합계: <strong id="diceTotal">2</strong></div>
+              <button class="primary-button" type="submit">이동 적용</button>
+            </form>
+            <div class="button-row spacing-top">
+              <button class="ghost-button danger-ghost" id="resetTurnBtn" type="button">↺ 현재 턴 리셋</button>
+            </div>
+            <p class="muted">주사위 2개(각 1~6) 합산(2~12)으로 이동. "현재 턴 리셋"은 마지막 주사위 입력 직전 상태로 완전 복원 (잘못 입력했을 때 사용).</p>
+          </article>
+
+          <article class="admin-card card tower-control-card">
+            <h2>3. 타워 구매 / 판매</h2>
+            <div id="towerDecision" class="tower-decision"></div>
+            <div id="activeTeamTowers" class="active-towers"></div>
+          </article>
+
+          <article class="admin-card card">
+            <h2>4. 미니게임 결과</h2>
+            <div id="miniGameBanner" class="mini-game-banner">진행 중인 미니게임이 없습니다.</div>
+            <form id="awardForm" class="award-form">
+              <label>1등<select id="firstTeam"></select><span>+20</span></label>
+              <label>2등<select id="secondTeam"></select><span>+10</span></label>
+              <label>3등<select id="thirdTeam"></select><span>+5</span></label>
+              <label class="checkbox-row"><input id="advanceAfterAward" type="checkbox" checked /> 시상 후 다음 팀으로 진행</label>
+              <div class="button-row wrap full-row">
+                <button class="primary-button" type="submit">포인트 지급</button>
+                <button class="ghost-button" id="clearMiniGameBtn" type="button">미니게임 제거</button>
+              </div>
+            </form>
+          </article>
+
+          <article class="admin-card card wide-card">
+            <h2>5. 팀 포인트 관리</h2>
+            <div id="pointsTable" class="teams-table"></div>
+            <p class="muted info-strip">수동 조정은 즉시 라이브 점수에 반영됩니다.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="tab-panel hidden" data-panel="teams">
+        <article class="admin-card card">
+          <div class="card-header-row">
+            <div>
+              <h2>팀 관리</h2>
+              <p class="muted">팀은 게임이 시작되기 전 또는 종료된 후에만 추가/삭제할 수 있습니다.</p>
+            </div>
+            <div class="button-row">
+              <button class="primary-button" id="addTeamBtn" type="button">+ 팀 추가</button>
+            </div>
+          </div>
+          <div id="teamSettings" class="team-settings"></div>
+        </article>
+      </section>
+
+      <section class="tab-panel hidden" data-panel="board">
+        <div class="admin-grid two-col">
+          <article class="admin-card card">
+            <h2>보드 미리보기</h2>
+            <div class="admin-board-preview">
+              <div id="adminMiniBoard" class="mini-board">
+                <div id="adminBoardTiles" class="tiles-layer"></div>
+                <div id="adminMiniCenter" class="mini-center">Ohana<br/>Monopoly</div>
+              </div>
+            </div>
+          </article>
+          <article class="admin-card card">
+            <h2>도시 및 타워 소유 현황</h2>
+            <div id="cityTable" class="city-table"></div>
+          </article>
+        </div>
+      </section>
+
+      <section class="tab-panel hidden" data-panel="log">
+        <article class="admin-card card">
+          <h2>게임 로그</h2>
+          <div id="adminLog" class="log-list"></div>
+        </article>
+      </section>
+    </section>
+  </main>
+
+  <div id="toast" class="toast hidden"></div>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/js/shared.js"></script>
+  <script src="/js/admin.js"></script>
+</body>
+</html>

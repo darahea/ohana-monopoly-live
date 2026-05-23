@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Ohana Monopoly | Live Board</title>
+  <link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body class="page board-page board-fullscreen">
+  <main class="broadcast-shell">
+    <aside class="scoreboard-panel">
+      <!-- 큰 현재 턴 카드 (별도 강조) -->
+      <div id="currentTurnCard" class="current-turn-card-big"></div>
+
+      <!-- 랭킹 (점수 desc) -->
+      <div class="ranking-header">
+        <span class="eyebrow light">현재 순위</span>
+        <h2>Leaderboard</h2>
+      </div>
+      <div id="rankingList" class="ranking-list"></div>
+    </aside>
+
+    <section class="board-stage">
+      <div class="board-wrap board-wrap-large">
+        <div id="gameBoard" class="game-board live-board" aria-label="Ohana Monopoly board">
+          <div id="tilesLayer" class="tiles-layer"></div>
+          <section id="centerSpotlight" class="center-panel" aria-live="polite"></section>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="toast" class="toast hidden"></div>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/js/shared.js"></script>
+  <script src="/js/board.js"></script>
+</body>
+</html>

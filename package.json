@@ -1,0 +1,20 @@
+{
+  "name": "ohana-monopoly-live-app",
+  "version": "3.0.0",
+  "description": "Ohana Monopoly live board and admin console. Korean UI, 2-10 teams, single die.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "check": "node --check server.js && node --check public/js/shared.js && node --check public/js/board.js && node --check public/js/admin.js"
+  },
+  "dependencies": {
+    "express": "^5.1.0",
+    "socket.io": "^4.8.1"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "license": "UNLICENSED",
+  "private": true
+}
