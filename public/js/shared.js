@@ -301,7 +301,7 @@ window.Ohana = (() => {
             </div>
             <div class="city-afford-overlay">
               ${landingTeam && !owner
-                ? `<p class="center-sub city-afford ${landingTeam.points >= city.cost ? 'can-buy' : 'not-enough'}"><span class="fee-team-chip" style="--team-color:${escapeHtml(landingTeam.color)}">${escapeHtml(landingTeam.name)}</span> ${landingTeam.points >= city.cost ? `<span class="fee-amount-highlight">${landingTeam.points}pts</span> · Buy?` : `Can't afford`}</p>`
+                ? `<p class="center-sub city-afford ${landingTeam.points >= city.cost ? 'can-buy' : 'not-enough'}"><span class="fee-team-chip" style="--team-color:${escapeHtml(landingTeam.color)}">${escapeHtml(landingTeam.name)}</span> ${landingTeam.points >= city.cost ? `has <span class="fee-amount-highlight">${landingTeam.points}pts</span> · Buy?` : `Can't afford`}</p>`
                 : landingTeam && owner
                   ? `<p class="center-sub city-afford" style="background:rgba(0,0,0,0.7);color:#fff"><span class="owner-dot" style="--team-color:${escapeHtml(owner.color)}"></span> Tower owned by ${escapeHtml(owner.name)}</p>`
                   : ''}
