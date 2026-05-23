@@ -750,6 +750,12 @@ a { color: inherit; }
   border: 2.5px solid #fff;
   box-shadow: 0 2px 4px rgba(0,0,0,.3), 0 0 0 1px rgba(0,0,0,.1);
 }
+.token-dot.is-active-token {
+  transform: scale(1.6);
+  z-index: 4;
+  position: relative;
+  box-shadow: 0 0 0 3px rgba(255,255,255,1), 0 0 0 5px var(--team-color, var(--sf-blue)), 0 3px 8px rgba(0,0,0,.3);
+}
 .token-dot.is-moving-token {
   animation: tokenPulse 0.9s ease-in-out infinite;
   transform: scale(2);

@@ -99,9 +99,12 @@ window.Ohana = (() => {
     const teams = teamsOnSpace(gameState, index);
     const movingTeamId = gameState.game?.moving?.teamId;
 
+    const currentTeamId = gameState.teams[gameState.game?.currentTurnIndex]?.id;
     const tokenHtml = teams.map((team) => {
       const isMoving = movingTeamId === team.id;
-      return `<span class="token-dot ${isMoving ? 'is-moving-token' : ''}" title="${escapeHtml(team.name)}" style="--team-color:${escapeHtml(team.color)}">${escapeHtml(team.shortName || team.name.slice(0, 1))}</span>`;
+      const isActive = !isMoving && team.id === currentTeamId;
+      const cls = isMoving ? 'is-moving-token' : isActive ? 'is-active-token' : '';
+      return `<span class="token-dot ${cls}" title="${escapeHtml(team.name)}" style="--team-color:${escapeHtml(team.color)}">${escapeHtml(team.shortName || team.name.slice(0, 1))}</span>`;
     }).join('');
 
     const tileTypeClass = `tile-${space.type}`;
