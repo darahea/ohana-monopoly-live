@@ -36,7 +36,10 @@
 
     if (!activeTeam) {
       $('roundDisplay').innerHTML = `Round — / ${maxRounds}`;
-      $('currentTurnCard').innerHTML = '';
+      $('currentTurnCard').innerHTML = `
+        <div class="ct-main">
+          <div class="ct-text"><div class="ct-name">Are you ready?</div></div>
+        </div>`;
       return;
     }
 
@@ -44,15 +47,18 @@
     const position = formatPosition(gameState, activeTeam?.position || 0);
     const moving = gameState.game.moving;
 
-    const diceDisplay = dice
+    const isCurrentDice = dice && dice.teamId === activeTeam?.id;
+    const diceDisplay = isCurrentDice
       ? (dice.dice1 != null && dice.dice2 != null
           ? `<span class="dice-face">${dice.dice1}</span><span class="dice-plus">+</span><span class="dice-face">${dice.dice2}</span><span class="dice-eq">=</span><span class="dice-total">${dice.value}</span>`
           : `<span class="dice-total">${dice.value}</span>`)
-      : '<span class="dice-placeholder">—</span>';
+      : '';
 
+    const towers = gameState.board.filter((s) => s.type === 'city' && s.ownerTeamId === activeTeam.id).length;
+    const rank = [...gameState.teams].sort((a, b) => b.points - a.points).findIndex((t) => t.id === activeTeam.id) + 1;
     const subtitle = moving
       ? `이동 중 · ${moving.step}/${moving.total}`
-      : position;
+      : `${towers} towers · ${activeTeam.points} pt · Now ${ordinal(rank)}`;
 
     const currentLap = (gameState.game?.laps?.[activeTeam?.id] || 0) + 1;
     $('roundDisplay').innerHTML = `Round ${currentLap} / ${maxRounds}`;
@@ -64,7 +70,6 @@
           <div class="ct-sub">${escapeHtml(subtitle)}</div>
         </div>
       </div>
-      <div class="ct-dice">${diceDisplay}</div>
     `;
   }
 
@@ -85,7 +90,7 @@
         <div class="rank-badge">${rankLabel}</div>
         <div class="rank-team">
           <strong>${escapeHtml(team.name)}</strong>
-          <span>${towers}개 타워${isFinished ? ' · 완료' : ''}</span>
+          <span>${towers} tower${towers !== 1 ? 's' : ''}${isFinished ? ' · Done' : ''}</span>
         </div>
         <div class="rank-points"><strong>${team.points}</strong><span>pts</span></div>
       </div>`;

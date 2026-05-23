@@ -50,7 +50,7 @@ const DEFAULT_BOARD = [
   { id: 'singapore', type: 'city', name: 'Singapore', label: 'Singapore', subtitle: '싱가포르', tier: 'low', cost: 4, fee: 3, image: '/assets/cities/singapore.webp' },                                  // 2
   { id: 'mini-1', type: 'mini', name: 'Mini Game', label: 'Mini Game' },                                                                                                                                // 3
   { id: 'london', type: 'city', name: 'London', label: 'London', subtitle: '런던, 영국', tier: 'mid', tag: 'Tower', cost: 6, fee: 5, image: '/assets/cities/london.webp' },                            // 4
-  { id: 'dublin', type: 'city', name: 'Dublin', label: 'Dublin', subtitle: '더블린, 아일랜드', tier: 'mid', cost: 6, fee: 5, image: '/assets/cities/dublin.webp' },                                    // 5 corner
+  { id: 'dubai', type: 'city', name: 'Dubai', label: 'Dubai', subtitle: '두바이, 아랍에미리트', tier: 'mid', cost: 6, fee: 5, image: '/assets/cities/dubai.webp' },                                    // 5 corner
   { id: 'paris', type: 'city', name: 'Paris', label: 'Paris', subtitle: '파리, 프랑스', tier: 'low', cost: 4, fee: 3, image: '/assets/cities/paris.webp' },                                            // 6
   { id: 'sydney', type: 'city', name: 'Sydney', label: 'Sydney', subtitle: '시드니, 호주', tier: 'mid', tag: 'Tower', cost: 6, fee: 5, image: '/assets/cities/sydney.webp' },                          // 7
   { id: 'mini-2', type: 'mini', name: 'Mini Game', label: 'Mini Game' },                                                                                                                                // 8
@@ -58,12 +58,12 @@ const DEFAULT_BOARD = [
   { id: 'taipei', type: 'city', name: 'Taipei', label: 'Taipei', subtitle: '타이페이, 대만', tier: 'mid', cost: 6, fee: 5, image: '/assets/cities/taipei.webp' },                                      // 10 corner
   { id: 'toronto', type: 'city', name: 'Toronto', label: 'Toronto', subtitle: '토론토, 캐나다', tier: 'low', cost: 4, fee: 3, image: '/assets/cities/toronto.webp' },                                   // 11
   { id: 'new-york', type: 'city', name: 'New York', label: 'New York', subtitle: '뉴욕, 미국', tier: 'mid', tag: 'Tower', cost: 6, fee: 5, image: '/assets/cities/new-york.webp' },                  // 12
-  { id: 'indianapolis', type: 'city', name: 'Indianapolis', label: 'Indianapolis', subtitle: '인디애나폴리스, 미국', tier: 'mid', cost: 6, fee: 5, image: '/assets/cities/indianapolis.webp' },        // 13
+  { id: 'berlin', type: 'city', name: 'Berlin', label: 'Berlin', subtitle: '베를린, 독일', tier: 'low', cost: 4, fee: 3, image: '/assets/cities/berlin.webp' },                                         // 13
   { id: 'mini-3', type: 'mini', name: 'Mini Game', label: 'Mini Game' },                                                                                                                                // 14
   { id: 'chicago', type: 'city', name: 'Chicago', label: 'Chicago', subtitle: '시카고, 미국', tier: 'low', cost: 4, fee: 3, image: '/assets/cities/chicago.webp' },                                     // 15 corner
   // 🔴 HIGH gauntlet at end
   { id: 'tokyo', type: 'city', name: 'Tokyo', label: 'Tokyo', subtitle: '도쿄, 일본', tier: 'high', tag: 'Tower', cost: 10, fee: 8, image: '/assets/cities/tokyo.webp' },                              // 16
-  { id: 'atlanta', type: 'city', name: 'Atlanta', label: 'Atlanta', subtitle: '애틀란타, 미국', tier: 'low', cost: 4, fee: 3, image: '/assets/cities/atlanta.webp' },                                    // 17
+  { id: 'dublin', type: 'city', name: 'Dublin', label: 'Dublin', subtitle: '더블린, 아일랜드', tier: 'high', cost: 10, fee: 8, image: '/assets/cities/dublin.webp' },                                  // 17
   { id: 'mini-4', type: 'mini', name: 'Mini Game', label: 'Mini Game' },                                                                                                                                // 18
   { id: 'seoul', type: 'city', name: 'Seoul', label: 'Seoul', subtitle: '서울, 대한민국', tier: 'high', tag: 'Hometown', cost: 10, fee: 8, image: '/assets/cities/seoul.webp' }                        // 19
 ];

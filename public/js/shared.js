@@ -184,13 +184,14 @@ window.Ohana = (() => {
     if (moving && spotlight?.type !== 'start') {
       const team = teamById(gameState, moving.teamId);
       const space = spaceByIndex(gameState, moving.current);
-      center.innerHTML = `<div class="center-default">
-        <div>
-          <div class="center-title"><span class="script">Moving</span></div>
-          <div class="center-sub">Step ${moving.step} of ${moving.total}</div>
-          <div class="center-sub">${escapeHtml(space?.label || space?.name || '')}</div>
-          <img src="/assets/astro.png" alt="Astro mascot" class="astro" />
-        </div>
+      const dice = gameState.game?.lastDice;
+      const diceDisplay = (dice?.dice1 != null && dice?.dice2 != null)
+        ? `<span class="moving-dice-face">${dice.dice1}</span><span class="moving-dice-op">+</span><span class="moving-dice-face">${dice.dice2}</span><span class="moving-dice-op">=</span><span class="moving-dice-total">${dice.value}</span>`
+        : `<span class="moving-dice-total">${dice?.value ?? '—'}</span>`;
+      center.innerHTML = `<div class="center-moving" style="--team-color:${escapeHtml(team?.color || '#0176d3')}">
+        <div class="moving-team-name">${escapeHtml(team?.name || 'Team')}</div>
+        <div class="moving-dice-row">${diceDisplay}</div>
+        <div class="moving-step">Step ${moving.step} / ${moving.total} · ${escapeHtml(space?.label || space?.name || '')}</div>
       </div>`;
       return;
     }
@@ -240,23 +241,31 @@ window.Ohana = (() => {
     if (spotlight?.type === 'fee_warning') {
       const payer = teamById(gameState, spotlight.teamId);
       const owner = teamById(gameState, spotlight.ownerTeamId);
-      center.innerHTML = `<div class="center-fee-warning">
-        <img class="fee-warning-icon" src="/assets/warning-icon.png" alt="Warning" />
-        <div class="fee-warning-headline">WARNING!</div>
-        <div class="fee-warning-body">
-          <div class="fee-warning-line">
-            <span class="fee-team-chip" style="--team-color:${escapeHtml(payer?.color || '#999')}">${escapeHtml(payer?.name || 'Team')}</span>
-            이(가) 도착했습니다
+      const city = spaceByIndex(gameState, spotlight.spaceIndex);
+      center.innerHTML = `<div class="center-city">
+        <div class="city-hero-wrap">
+          ${city?.image ? `<img class="city-hero" src="${escapeHtml(city.image)}" alt="" />` : ''}
+          <div class="city-hero-title">
+            <h2>${escapeHtml(spotlight.cityLabel || '')}</h2>
           </div>
-          <div class="fee-warning-city">${escapeHtml(spotlight.cityLabel || '')}</div>
-          <div class="fee-warning-line">
-            소유:
-            <span class="fee-team-chip" style="--team-color:${escapeHtml(owner?.color || '#999')}">${escapeHtml(owner?.name || 'Team')}</span>
+          <div class="fee-warning-banner">
+            <img class="fee-warning-banner-icon" src="/assets/warning-icon.png" alt="Warning" />
+            <div class="fee-warning-banner-text">
+              <span class="fee-team-chip" style="--team-color:${escapeHtml(payer?.color || '#999')}">${escapeHtml(payer?.name || 'Team')}</span>
+              pays <span class="fee-amount-highlight">${spotlight.feeAmount}pts</span> to
+              <span class="fee-team-chip" style="--team-color:${escapeHtml(owner?.color || '#999')}">${escapeHtml(owner?.name || 'Team')}</span>
+            </div>
           </div>
         </div>
-        <div class="fee-warning-amount">
-          <span class="fee-amount-label">통행료</span>
-          <span class="fee-amount-value">${spotlight.feeAmount} pts</span>
+        <div class="city-stats-bar">
+          <div class="city-stat-pill">
+            <div class="city-stat-label"><span class="lbl-en">TOLL FEE</span><span class="lbl-ko">통행료</span></div>
+            <div class="city-stat-value">${spotlight.feeAmount}</div>
+          </div>
+          <div class="city-stat-pill">
+            <div class="city-stat-label"><span class="lbl-en">OWNER</span><span class="lbl-ko">소유</span></div>
+            <div class="city-stat-value" style="font-size:24px;color:var(--team-color)">${escapeHtml(owner?.name || '—')}</div>
+          </div>
         </div>
       </div>`;
       return;
@@ -282,27 +291,29 @@ window.Ohana = (() => {
       const landingTeam = teamById(gameState, spotlight.teamId);
       if (city) {
         const owner = city.ownerTeamId ? teamById(gameState, city.ownerTeamId) : null;
-        const tierClass = `tier-${city.tier || 'low'}`;
-        center.innerHTML = `<div class="center-city ${tierClass}">
+        center.innerHTML = `<div class="center-city">
           <div class="city-hero-wrap">
             <img class="city-hero" src="${escapeHtml(city.image)}" alt="${escapeHtml(city.name)} office spotlight" />
             <div class="city-hero-title">
-              <div class="status-label">City Spotlight · ${escapeHtml(tierTagText(city.tier))}</div>
               <h2>${escapeHtml(city.label || city.name)}</h2>
               <p class="city-hero-sub">${escapeHtml(city.subtitle || '')}</p>
             </div>
-          </div>
-          <div class="city-copy">
-            <div class="city-stats-row">
-              <div class="city-stat big"><span>PURCHASE</span><strong>${city.cost}</strong></div>
-              <div class="city-stat big"><span>TOLL FEE</span><strong>${city.fee}</strong></div>
-            </div>
-            <div class="city-meta-row">
+            <div class="city-afford-overlay">
               ${landingTeam && !owner
-                ? `<p class="center-sub city-afford ${landingTeam.points >= city.cost ? 'can-buy' : 'not-enough'}"><span class="fee-team-chip" style="--team-color:${escapeHtml(landingTeam.color)}">${escapeHtml(landingTeam.name)}</span> has ${landingTeam.points}pts ${landingTeam.points >= city.cost ? '→ Can buy!' : '→ Not enough'}</p>`
+                ? `<p class="center-sub city-afford ${landingTeam.points >= city.cost ? 'can-buy' : 'not-enough'}"><span class="fee-team-chip" style="--team-color:${escapeHtml(landingTeam.color)}">${escapeHtml(landingTeam.name)}</span> ${landingTeam.points >= city.cost ? `${landingTeam.points}pts · Buy?` : `Can't afford`}</p>`
                 : landingTeam && owner
-                  ? `<p class="center-sub"><span class="owner-dot" style="--team-color:${escapeHtml(owner.color)}"></span> Tower owned by ${escapeHtml(owner.name)}</p>`
-                  : '<p class="center-sub">No tower yet.</p>'}
+                  ? `<p class="center-sub city-afford" style="background:rgba(0,0,0,0.7);color:#fff"><span class="owner-dot" style="--team-color:${escapeHtml(owner.color)}"></span> Tower owned by ${escapeHtml(owner.name)}</p>`
+                  : ''}
+            </div>
+          </div>
+          <div class="city-stats-bar">
+            <div class="city-stat-pill">
+              <div class="city-stat-label"><span class="lbl-en">COST</span><span class="lbl-ko">건설비용</span></div>
+              <div class="city-stat-value">${city.cost}</div>
+            </div>
+            <div class="city-stat-pill">
+              <div class="city-stat-label"><span class="lbl-en">FEE</span><span class="lbl-ko">통행료</span></div>
+              <div class="city-stat-value">${city.fee}</div>
             </div>
           </div>
         </div>`;
@@ -325,9 +336,8 @@ window.Ohana = (() => {
 
     center.innerHTML = `<div class="center-default">
       <div>
-        <div class="center-title"><span class="script">Ohana</span><span class="banner-word">MONOPOLY</span></div>
-        <div class="center-sub">Live board for the workshop</div>
-        <img src="/assets/astro.png" alt="Astro mascot" class="astro" />
+        <img src="/assets/brand/ohana-monopoly-badge.png" alt="Ohana Monopoly" class="center-default-logo" />
+        <div class="center-sub">FY27 SE Workshop</div>
       </div>
     </div>`;
   }
