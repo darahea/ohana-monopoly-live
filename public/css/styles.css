@@ -1061,6 +1061,35 @@ a { color: inherit; }
   background: #00A1E0;
   color: #fff;
 }
+.start-pass-astro {
+  width: 120px;
+  height: auto;
+  margin-bottom: 16px;
+  filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.3));
+}
+.start-pass-banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 1);
+  border-radius: 999px;
+  padding: 16px 28px;
+  box-shadow: 0 10px 32px rgba(0, 0, 0, 0.30);
+}
+.start-pass-text {
+  font-family: var(--font-en);
+  font-size: 28px;
+  font-weight: 700;
+  color: #032D60;
+}
+.start-pass-bonus {
+  font-family: var(--font-en);
+  font-size: 32px;
+  font-weight: 800;
+  color: #EA001E;
+}
 .center-roll {
   background: var(--team-color, #0176d3);
   color: #fff;
@@ -1074,24 +1103,39 @@ a { color: inherit; }
   margin-bottom: 16px;
 }
 .roll-team-name {
-  font-size: 36px;
-  font-weight: 800;
+  font-family: var(--font-en);
+  font-size: 84px;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  line-height: 1;
+  color: #fff;
+  text-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+  padding: 6px 22px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 2px solid rgba(255,255,255,0.4);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.25);
   margin: 0;
 }
 .roll-subtitle {
-  font-size: 24px;
+  font-size: 28px;
   font-weight: 600;
-  margin-top: 8px;
+  margin-top: 16px;
   opacity: 0.9;
 }
 .center-default { background: linear-gradient(165deg, #032d60 0%, #0176d3 100%); color: #fff; }
+.workshop-title {
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
 .center-default-logo {
-  width: 65%;
-  max-width: 320px;
+  width: 85%;
+  max-width: 480px;
   height: auto;
   object-fit: contain;
   filter: drop-shadow(0 12px 28px rgba(0, 0, 0, 0.30));
-  margin-bottom: 16px;
+  margin-bottom: 20px;
 }
 .center-ended {
   background: linear-gradient(165deg, #032d60 0%, #0176d3 100%);
@@ -1212,13 +1256,13 @@ a { color: inherit; }
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  padding: 3px 10px;
+  padding: 4px 14px;
   background: #fff;
   border-radius: 999px;
   border-left: 4px solid var(--team-color, var(--sf-blue));
   font-family: var(--font-en);
   font-weight: 700;
-  font-size: 14px;
+  font-size: 24px;
   color: var(--team-color, var(--sf-blue));
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
 }
@@ -1422,20 +1466,21 @@ a { color: inherit; }
 }
 .fee-warning-banner-text {
   font-family: var(--font-en);
-  font-size: 17px;
+  font-size: 24px;
   font-weight: 700;
   color: #000;
   line-height: 1.4;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
 }
 .fee-amount-highlight {
-  font-size: 24px;
+  font-size: 32px;
   font-weight: 800;
   color: #EA001E;
   font-family: var(--font-en);
+  text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff;
 }
 .city-afford-overlay {
   position: absolute;
@@ -1447,9 +1492,9 @@ a { color: inherit; }
 .city-afford-overlay .city-afford {
   background: rgba(0, 0, 0, 0.7);
   backdrop-filter: blur(8px);
-  border-radius: 12px;
-  padding: 10px 20px;
-  font-size: 18px;
+  border-radius: 16px;
+  padding: 16px 32px;
+  font-size: 32px;
   color: #fff;
   white-space: nowrap;
 }
@@ -1501,14 +1546,14 @@ a { color: inherit; }
 }
 .city-stat-label .lbl-en {
   font-family: var(--font-en);
-  font-size: 12px;
+  font-size: 16px;
   font-weight: 700;
   letter-spacing: 0.10em;
   color: #475569;
 }
 .city-stat-label .lbl-ko {
   font-family: var(--font-ko);
-  font-size: 13px;
+  font-size: 18px;
   font-weight: 700;
   color: #0F172A;
 }
