@@ -138,10 +138,12 @@ window.Ohana = (() => {
 
     let body = '';
     if (space.type === 'city') {
+      const tierDollars = space.tier === 'high' ? '$$$' : space.tier === 'mid' ? '$$' : '$';
       body = `
         <div class="tile-body">
           <div class="tile-name">${escapeHtml(space.label || space.name)}</div>
           <div class="tile-subtitle">${escapeHtml(space.subtitle || '')}</div>
+          <div class="tile-tier-label">${tierDollars}</div>
         </div>`;
     } else if (space.type === 'mini') {
       body = `
