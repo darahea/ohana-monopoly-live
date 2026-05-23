@@ -85,9 +85,12 @@
           : !owner
             ? `<span class="muted">현재 팀이 이 칸에 막 착지한 직후에만 타워를 구매할 수 있습니다.</span>`
             : `<span class="muted">타워 소유: ${escapeHtml(owner?.name || '알 수 없음')}</span>`;
+      const guidanceText = canBuild
+        ? '현재 팀에게 타워 구매 의사를 확인하고, 원하면 아래 버튼을 누르세요.'
+        : '';
       $('towerDecision').innerHTML = `<div class="decision-card ${cardClass}">
         <strong>${escapeHtml(currentSpace.label || currentSpace.name)}</strong>
-        <span class="muted">현재 팀에게 타워 구매 의사를 확인하고, 원하면 아래 버튼을 누르세요.</span>
+        ${guidanceText ? `<span class="muted">${guidanceText}</span>` : ''}
         <div class="decision-grid">
           <div class="decision-metric"><span>팀 포인트</span><b>${activeTeam.points}</b></div>
           <div class="decision-metric"><span>구매가</span><b>${currentSpace.cost}</b></div>

@@ -299,7 +299,7 @@ window.Ohana = (() => {
             </div>
             <div class="city-meta-row">
               ${landingTeam && !owner
-                ? `<p class="center-sub"><span class="fee-team-chip" style="--team-color:${escapeHtml(landingTeam.color)}">${escapeHtml(landingTeam.name)}</span> has ${landingTeam.points}pts ${landingTeam.points >= city.cost ? '→ Can buy!' : '→ Not enough'}</p>`
+                ? `<p class="center-sub city-afford ${landingTeam.points >= city.cost ? 'can-buy' : 'not-enough'}"><span class="fee-team-chip" style="--team-color:${escapeHtml(landingTeam.color)}">${escapeHtml(landingTeam.name)}</span> has ${landingTeam.points}pts ${landingTeam.points >= city.cost ? '→ Can buy!' : '→ Not enough'}</p>`
                 : landingTeam && owner
                   ? `<p class="center-sub"><span class="owner-dot" style="--team-color:${escapeHtml(owner.color)}"></span> Tower owned by ${escapeHtml(owner.name)}</p>`
                   : '<p class="center-sub">No tower yet.</p>'}
