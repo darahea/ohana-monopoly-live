@@ -18,12 +18,12 @@ const MIN_TEAMS = 2;
 const MAX_TEAMS = 10;
 
 const TEAM_PALETTE = [
-  '#0176D3', // 1 Blue
+  '#FF6900', // 1 Vivid Orange
   '#2E844A', // 2 Green
   '#7F4ACB', // 3 Purple
-  '#FF9F1C', // 4 Orange
+  '#1B2A6B', // 4 Dark Navy
   '#EA001E', // 5 Red
-  '#F9C642', // 6 Yellow
+  '#FFCC00', // 6 Bright Yellow
   '#00BCD4', // 7 Cyan
   '#E91E63', // 8 Pink
   '#8BC34A', // 9 Lime
@@ -32,11 +32,11 @@ const TEAM_PALETTE = [
 
 function defaultTeamAt(index) {
   const id = `team-${String(index + 1).padStart(2, '0')}`;
-  const label = String(index + 1).padStart(2, '0');
+  const num = String(index + 1);
   return {
     id,
-    name: `Team #${label}`,
-    shortName: label,
+    name: `Team #${num}`,
+    shortName: num,
     color: TEAM_PALETTE[index] || '#64748B'
   };
 }

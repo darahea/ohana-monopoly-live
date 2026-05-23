@@ -734,25 +734,25 @@ a { color: inherit; }
   align-items: center;
   z-index: 1;
 }
-.token-row { display: flex; gap: 3px; flex-wrap: wrap; align-items: center; }
+.token-row { display: flex; gap: 4px; flex-wrap: wrap; align-items: center; }
 .token-dot {
-  width: 18px;
-  height: 18px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
   background: var(--team-color, var(--sf-blue));
   color: #fff;
-  font-size: 9px;
+  font-size: 13px;
   font-weight: 700;
   font-family: var(--font-en);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border: 2px solid #fff;
-  box-shadow: 0 1px 3px rgba(0,0,0,.25), 0 0 0 1px rgba(0,0,0,.08);
+  border: 2.5px solid #fff;
+  box-shadow: 0 2px 4px rgba(0,0,0,.3), 0 0 0 1px rgba(0,0,0,.1);
 }
 .token-dot.is-moving-token {
   animation: tokenPulse 0.9s ease-in-out infinite;
-  transform: scale(1.55);
+  transform: scale(2);
   z-index: 5;
   position: relative;
   box-shadow: 0 0 0 3px rgba(255,255,255,1), 0 0 0 5px var(--team-color, var(--sf-blue)), 0 4px 12px rgba(0,0,0,.35);
