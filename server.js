@@ -21,11 +21,11 @@ const TEAM_PALETTE = [
   '#FF6900', // 1 Vivid Orange
   '#2E844A', // 2 Green
   '#7F4ACB', // 3 Purple
-  '#1B2A6B', // 4 Dark Navy
+  '#FF80AB', // 4 Light Pink
   '#EA001E', // 5 Red
-  '#FFCC00', // 6 Bright Yellow
+  '#F5B800', // 6 Golden Yellow
   '#00BCD4', // 7 Cyan
-  '#E91E63', // 8 Pink
+  '#1B2A6B', // 8 Dark Navy
   '#8BC34A', // 9 Lime
   '#795548'  // 10 Brown
 ];
@@ -50,7 +50,7 @@ const DEFAULT_BOARD = [
   { id: 'singapore', type: 'city', name: 'Singapore', label: 'Singapore', subtitle: '싱가포르', tier: 'low', cost: 4, fee: 8, image: '/assets/cities/singapore.webp' },                                  // 2
   { id: 'mini-1', type: 'mini', name: 'Mini Game', label: 'Mini Game' },                                                                                                                                // 3
   { id: 'london', type: 'city', name: 'London', label: 'London', subtitle: '런던, 영국', tier: 'mid', tag: 'Tower', cost: 6, fee: 12, image: '/assets/cities/london.webp' },                            // 4
-  { id: 'empty-1', type: 'empty', name: 'Coming Soon', label: '도시 추가 예정' },                                                                                                                       // 5 corner
+  { id: 'dublin', type: 'city', name: 'Dublin', label: 'Dublin', subtitle: '더블린, 아일랜드', tier: 'mid', cost: 6, fee: 12, image: '/assets/cities/dublin.webp' },                                    // 5 corner
   { id: 'paris', type: 'city', name: 'Paris', label: 'Paris', subtitle: '파리, 프랑스', tier: 'low', cost: 4, fee: 8, image: '/assets/cities/paris.webp' },                                            // 6
   { id: 'sydney', type: 'city', name: 'Sydney', label: 'Sydney', subtitle: '시드니, 호주', tier: 'mid', tag: 'Tower', cost: 6, fee: 12, image: '/assets/cities/sydney.webp' },                          // 7
   { id: 'mini-2', type: 'mini', name: 'Mini Game', label: 'Mini Game' },                                                                                                                                // 8
@@ -58,12 +58,12 @@ const DEFAULT_BOARD = [
   { id: 'taipei', type: 'city', name: 'Taipei', label: 'Taipei', subtitle: '타이페이, 대만', tier: 'mid', cost: 6, fee: 12, image: '/assets/cities/taipei.webp' },                                      // 10 corner
   { id: 'toronto', type: 'city', name: 'Toronto', label: 'Toronto', subtitle: '토론토, 캐나다', tier: 'low', cost: 4, fee: 8, image: '/assets/cities/toronto.webp' },                                   // 11
   { id: 'new-york', type: 'city', name: 'New York', label: 'New York', subtitle: '뉴욕, 미국', tier: 'mid', tag: 'Tower', cost: 6, fee: 12, image: '/assets/cities/new-york.webp' },                  // 12
-  { id: 'empty-2', type: 'empty', name: 'Coming Soon', label: '도시 추가 예정' },                                                                                                                       // 13
+  { id: 'indianapolis', type: 'city', name: 'Indianapolis', label: 'Indianapolis', subtitle: '인디애나폴리스, 미국', tier: 'mid', cost: 6, fee: 12, image: '/assets/cities/indianapolis.webp' },        // 13
   { id: 'mini-3', type: 'mini', name: 'Mini Game', label: 'Mini Game' },                                                                                                                                // 14
   { id: 'chicago', type: 'city', name: 'Chicago', label: 'Chicago', subtitle: '시카고, 미국', tier: 'low', cost: 4, fee: 8, image: '/assets/cities/chicago.webp' },                                     // 15 corner
   // 🔴 HIGH gauntlet at end
   { id: 'tokyo', type: 'city', name: 'Tokyo', label: 'Tokyo', subtitle: '도쿄, 일본', tier: 'high', tag: 'Tower', cost: 10, fee: 20, image: '/assets/cities/tokyo.webp' },                              // 16
-  { id: 'empty-3', type: 'empty', name: 'Coming Soon', label: '도시 추가 예정' },                                                                                                                       // 17
+  { id: 'atlanta', type: 'city', name: 'Atlanta', label: 'Atlanta', subtitle: '애틀란타, 미국', tier: 'low', cost: 4, fee: 8, image: '/assets/cities/atlanta.webp' },                                    // 17
   { id: 'mini-4', type: 'mini', name: 'Mini Game', label: 'Mini Game' },                                                                                                                                // 18
   { id: 'seoul', type: 'city', name: 'Seoul', label: 'Seoul', subtitle: '서울, 대한민국', tier: 'high', tag: 'Hometown', cost: 10, fee: 20, image: '/assets/cities/seoul.webp' }                        // 19
 ];
@@ -101,8 +101,8 @@ function createInitialState(teamCount = DEFAULT_TEAM_COUNT) {
     title: 'Ohana Monopoly',
     createdAt: now(),
     updatedAt: now(),
-    settings: { startPoints: 20, passStartPoints: 5, miniGameAwards: [20, 10, 5], moveStepMs: MOVE_STEP_MS },
-    game: { status: 'ready', round: 1, currentTurnIndex: 0, turnsPlayed: 0, lastDice: null, lastLanding: null, spotlight: null, activeMiniGame: null, moving: null, startedAt: null, endedAt: null },
+    settings: { startPoints: 20, passStartPoints: 5, miniGameAwards: [20, 10, 5], moveStepMs: MOVE_STEP_MS, maxRounds: 3 },
+    game: { status: 'ready', round: 1, currentTurnIndex: 0, turnsPlayed: 0, lastDice: null, lastLanding: null, spotlight: null, activeMiniGame: null, moving: null, startedAt: null, endedAt: null, laps: {} },
     teams,
     board,
     pendingFees: [],
@@ -235,13 +235,21 @@ function applyTurnFromCounter() {
   state.game.round = Math.floor(T / n) + 1;
 }
 
+function isTeamFinished(teamId) {
+  return Array.isArray(state.game.finished) && state.game.finished.includes(teamId);
+}
+
 function advanceTurn({ clearSpotlight = true, force = false } = {}) {
   if (state.game.moving) throw bad('팀이 이동 중입니다. 이동이 끝난 후 다시 시도해 주세요.');
   if (!force && state.game.activeMiniGame) throw bad('진행 중인 미니게임을 먼저 처리해 주세요.');
   cancelAutoAdvance();
   const oldTeam = currentTeam();
-  state.game.turnsPlayed = (state.game.turnsPlayed || 0) + 1;
-  applyTurnFromCounter();
+  let attempts = 0;
+  do {
+    state.game.turnsPlayed = (state.game.turnsPlayed || 0) + 1;
+    applyTurnFromCounter();
+    attempts++;
+  } while (isTeamFinished(currentTeam().id) && attempts < state.teams.length);
   state.game.lastDice = null;
   state.game.lastLanding = null;
   state.game.activeMiniGame = force ? null : state.game.activeMiniGame;
@@ -310,7 +318,7 @@ function setLandingSpotlight(team, landing, newPosition) {
   }
 
   if (landing.type === 'start') {
-    state.game.spotlight = null;
+    state.game.spotlight = { type: 'start', teamId: team.id, at: now() };
     addLog(`${team.name}이(가) START에 착지했습니다.`, 'start');
   }
 
@@ -380,7 +388,39 @@ async function moveActiveTeamAnimated(dice1, dice2) {
       state.game.moving = { teamId: team.id, from: oldPosition, current: index, step, total, path, at: now() };
       if (index === 0) {
         team.points += state.settings.passStartPoints;
+        if (!state.game.laps) state.game.laps = {};
+        state.game.laps[team.id] = (state.game.laps[team.id] || 0) + 1;
         addLog(`${team.name}이(가) START를 지나며 ${state.settings.passStartPoints}포인트를 획득했습니다.`, 'start');
+
+        const maxR = state.settings.maxRounds;
+        if (maxR && state.game.laps[team.id] >= maxR) {
+          if (!state.game.finished) state.game.finished = [];
+          if (!state.game.finished.includes(team.id)) state.game.finished.push(team.id);
+          team.position = -1;
+          state.game.moving = null;
+          state.game.spotlight = { type: 'team_finished', teamId: team.id, at: now() };
+          addLog(`${team.name}이(가) 모든 라운드를 완료했습니다!`, 'system');
+          emitAndSave();
+          await delay(3000);
+          state.game.spotlight = null;
+          emitAndSave();
+
+          const allDone = state.teams.every((t) => (state.game.laps[t.id] || 0) >= maxR);
+          if (allDone) {
+            state.game.status = 'ended';
+            state.game.endedAt = now();
+            state.game.activeMiniGame = null;
+            state.game.spotlight = null;
+            addLog(`모든 팀이 ${maxR}바퀴를 완료하여 게임이 자동 종료되었습니다.`, 'system');
+            emitAndSave();
+          }
+          return;
+        }
+
+        state.game.spotlight = { type: 'start', teamId: team.id, at: now() };
+        emitAndSave();
+        await delay(2000);
+        state.game.spotlight = null;
       }
       emitAndSave();
       await delay(MOVE_STEP_MS);
@@ -533,12 +573,20 @@ function removeTeam(teamId) {
 app.get('/admin', (_req, res) => res.sendFile(path.join(PUBLIC_DIR, 'admin.html')));
 app.get('/api/state', (_req, res) => ok(res, { state: visibleState() }));
 
+app.post('/api/admin/set-max-rounds', (req, res) => mutate(res, () => {
+  const rounds = Number(req.body.maxRounds);
+  if (!Number.isInteger(rounds) || rounds < 1 || rounds > 10) throw bad('라운드 수는 1~10 사이의 정수여야 합니다.');
+  state.settings.maxRounds = rounds;
+  addLog(`총 라운드가 ${rounds}로 설정되었습니다.`, 'system');
+}));
+
 app.post('/api/admin/start-game', (_req, res) => mutate(res, () => {
   if (state.game.status === 'active') throw bad('게임이 이미 진행 중입니다.');
   state.game.status = 'active';
   state.game.startedAt = now();
   state.game.endedAt = null;
-  addLog(`게임이 시작되었습니다. 첫 턴은 ${currentTeam().name}입니다.`, 'system');
+  state.game.laps = {};
+  addLog(`게임이 시작되었습니다. 총 ${state.settings.maxRounds}라운드, 첫 턴은 ${currentTeam().name}입니다.`, 'system');
 }));
 
 app.post('/api/admin/end-game', (_req, res) => mutate(res, () => {
