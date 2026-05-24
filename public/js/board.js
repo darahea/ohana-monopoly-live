@@ -72,9 +72,25 @@
   }
 
   function sfxGameEnd() {
-    [880, 784, 659, 523].forEach((f, i) => {
-      setTimeout(() => playTone(f, 0.3, 'triangle', 0.25), i * 200);
+    const fanfare = [
+      [523, 0.15, 'square', 0.25],
+      [659, 0.15, 'square', 0.25],
+      [784, 0.15, 'square', 0.25],
+      [1047, 0.4, 'square', 0.3],
+    ];
+    fanfare.forEach(([f, dur, type, vol], i) => {
+      setTimeout(() => playTone(f, dur, type, vol), i * 150);
     });
+    setTimeout(() => {
+      [1047, 1175, 1319, 1568].forEach((f, i) => {
+        setTimeout(() => playTone(f, 0.2, 'sine', 0.2), i * 100);
+      });
+    }, 700);
+    setTimeout(() => {
+      [1568, 1319, 1568].forEach((f, i) => {
+        setTimeout(() => playTone(f, 0.35, 'triangle', 0.22), i * 180);
+      });
+    }, 1200);
   }
 
   function sfxTurnChange() {

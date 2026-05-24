@@ -114,7 +114,14 @@ function normalizeLoadedBoard(board) {
   if (!Array.isArray(board) || board.length !== DEFAULT_BOARD.length) {
     return DEFAULT_BOARD.map((space, index) => ({ ...space, index, ownerTeamId: null }));
   }
-  return board.map((space, index) => ({ ...DEFAULT_BOARD[index], ownerTeamId: space.ownerTeamId || null, index }));
+  return board.map((space, index) => {
+    const base = { ...DEFAULT_BOARD[index], ownerTeamId: space.ownerTeamId || null, index };
+    if (space.upgraded) {
+      base.upgraded = true;
+      base.fee = DEFAULT_BOARD[index].upgradedFee || base.fee;
+    }
+    return base;
+  });
 }
 
 function normalizeLoadedTeams(teams) {
@@ -290,8 +297,14 @@ function setLandingSpotlight(team, landing, newPosition) {
       state.game.spotlight = { type: 'city', spaceIndex: newPosition, teamId: team.id, at: now() };
       addLog(`${team.name}이(가) ${landing.label}에 착지했습니다. ${landing.cost}포인트로 타워를 구매할 수 있습니다.`, 'city');
     } else if (landing.ownerTeamId === team.id) {
-      state.game.spotlight = { type: 'city', spaceIndex: newPosition, teamId: team.id, at: now() };
-      addLog(`${team.name}이(가) 자신의 타워가 있는 ${landing.label}에 착지했습니다.`, 'city');
+      if (landing.id === 'seoul' && landing.upgradeCost && !landing.upgraded) {
+        const canAfford = team.points >= landing.upgradeCost;
+        state.game.spotlight = { type: 'seoul_upgrade', spaceIndex: newPosition, teamId: team.id, canAfford, upgradeCost: landing.upgradeCost, upgradedFee: landing.upgradedFee, at: now() };
+        addLog(`${team.name}이(가) 서울에 착지했습니다. Salesforce Tower를 건설할 수 있습니다.`, 'city');
+      } else {
+        state.game.spotlight = { type: 'city', spaceIndex: newPosition, teamId: team.id, at: now() };
+        addLog(`${team.name}이(가) 자신의 도시 ${landing.label}에 착지했습니다.`, 'city');
+      }
     } else {
       const owner = getTeam(landing.ownerTeamId);
       addLog(`${team.name}이(가) ${owner?.name || '다른 팀'} 소유의 ${landing.label}에 착지했습니다.`, 'city');
@@ -489,6 +502,7 @@ function scheduleAutoAdvanceIfNeeded(landing) {
     if (!landing.ownerTeamId) return; // empty city, await buy
     const team = currentTeam();
     if (landing.ownerTeamId === team.id) {
+      if (landing.id === 'seoul' && landing.upgradeCost && !landing.upgraded) return;
       scheduleAutoAdvance(3000, 'own_city');
     } else {
       scheduleAutoAdvance(4500, 'fee_paid');
@@ -516,8 +530,12 @@ function buildCurrentTower() {
   team.points -= space.cost;
   space.ownerTeamId = team.id;
   addLog(`${team.name}이(가) ${space.label}에 ${space.cost}포인트로 타워를 건설했습니다.`, 'tower');
-  // Auto-advance after build (3 sec to see the result)
-  scheduleAutoAdvance(3500, 'tower_built');
+  if (space.id === 'seoul' && space.upgradeCost && !space.upgraded) {
+    const canAfford = team.points >= space.upgradeCost;
+    state.game.spotlight = { type: 'seoul_upgrade', spaceIndex: space.index, teamId: team.id, canAfford, upgradeCost: space.upgradeCost, upgradedFee: space.upgradedFee, at: now() };
+  } else {
+    scheduleAutoAdvance(3500, 'tower_built');
+  }
 }
 
 function upgradeSeoulTower() {
@@ -534,6 +552,16 @@ function upgradeSeoulTower() {
   space.upgraded = true;
   space.fee = space.upgradedFee || 20;
   addLog(`${team.name}이(가) 서울에 Salesforce Tower를 건설했습니다! 통행료 ${space.fee}pts`, 'tower');
+  scheduleAutoAdvance(4000, 'seoul_upgraded');
+}
+
+function skipSeoulUpgrade() {
+  if (state.game.status !== 'active') throw bad('게임이 진행 중이 아닙니다.');
+  const space = state.board.find((s) => s.id === 'seoul');
+  if (!space) throw bad('서울 도시를 찾을 수 없습니다.');
+  state.game.spotlight = null;
+  addLog(`${currentTeam().name}이(가) 서울 Salesforce Tower 건설을 건너뛰었습니다.`, 'tower');
+  scheduleAutoAdvance(2000, 'seoul_skip');
 }
 
 function sellTowerForActiveTeam(cityIndex) {
@@ -682,6 +710,7 @@ app.post('/api/admin/previous-turn', (_req, res) => mutate(res, () => {
 
 app.post('/api/admin/build-current-tower', (_req, res) => mutate(res, () => { buildCurrentTower(); }));
 app.post('/api/admin/upgrade-seoul', (_req, res) => mutate(res, () => { upgradeSeoulTower(); }));
+app.post('/api/admin/skip-seoul-upgrade', (_req, res) => mutate(res, () => { skipSeoulUpgrade(); }));
 app.post('/api/admin/sell-tower', (req, res) => mutate(res, () => { sellTowerForActiveTeam(req.body.cityIndex); }));
 app.post('/api/admin/remove-tower', (req, res) => mutate(res, () => { removeTower(req.body.cityIndex); }));
 
@@ -715,7 +744,7 @@ app.post('/api/admin/clear-spotlight', (_req, res) => mutate(res, () => {
 }));
 
 
-const TUTORIAL_SLIDE_COUNT = 10;
+const TUTORIAL_SLIDE_COUNT = 9;
 
 app.post('/api/admin/tutorial-start', (_req, res) => mutate(res, () => {
   state.game.tutorial = { slide: 0 };

@@ -127,7 +127,8 @@ window.Ohana = (() => {
       isLightColor ? 'tile-owner-light' : '',
       Number(lastLandingIndex) === index ? 'is-landing' : '',
       Number(movingIndex) === index ? 'is-moving' : '',
-      mini ? 'mini-tile' : ''
+      mini ? 'mini-tile' : '',
+      space.id === 'seoul' && space.upgraded ? 'seoul-upgraded' : ''
     ].filter(Boolean).join(' ');
 
     const ownerBadge = owner
@@ -177,12 +178,11 @@ window.Ohana = (() => {
     { type: 'cover', title: 'Tutorial', image: '/assets/brand/ohana-monopoly-badge.png' },
     { title: 'How to Win', body: '**Buy** cities\n**Collect** tolls from others\n**Most points** at the end wins!', bodyKo: '도시를 **구매**하고\n다른 팀에게 **통행료**를 받고\n가장 많은 **포인트** = 우승!' },
     { title: 'Your Turn', body: '🎲 Roll **a die, twice**\nAdd the two numbers\nMove that many spaces', bodyKo: '🎲 주사위 **두 번** 굴려서\n두 숫자를 더한 만큼\n말을 이동합니다' },
-    { title: 'Cities', sub: '(서울을 제외한 😢) 보드 위 모든 도시는\nSalesforce Tower가 있는 도시입니다', body: 'Empty city → **Buy** it!\nOther team\'s city → **Pay toll**!', bodyKo: '빈 도시 → **구매** 가능!\n다른 팀 도시 → **통행료** 지불!' },
-    { title: 'City Pricing', sub: '도시 등급이 높을수록 투자 대비 수익이 큽니다', body: 'Cities have **3 tiers**\nHigher cost = Higher toll income!', bodySmall: '$ Low — Buy 4 / Toll 8\n$$ Mid — Buy 6 / Toll 12\n$$$ High — Buy 10 / Toll 20', bodyKo: '도시는 **3단계** 등급\n비쌀수록 통행료 수입이 높다!', bodyKoSmall: '$ 저가 — 구매 4 / 통행료 8\n$$ 중가 — 구매 6 / 통행료 12\n$$$ 고가 — 구매 10 / 통행료 20' },
+    { title: 'START', sub: '보드를 한 바퀴 돌 때마다 보너스를 받습니다', body: 'Pass or land on **START**\n→ **+5pts** every time!', bodyKo: '**START**를 지나거나 도착\n→ 매번 **+5pts** 획득!' },
+    { title: 'Cities', sub: '(서울을 제외한 😢) 보드 위 모든 도시는\nSalesforce Tower가 있는 도시입니다', body: 'Empty city → **Buy** it!\nOther team\'s → **Pay toll**!\n**3 tiers** — Higher cost = Higher reward!', bodySmall: '$ Buy 4 / Toll 8 · $$ Buy 6 / Toll 12 · $$$ Buy 10 / Toll 20', bodyKo: '빈 도시 → **구매** 가능!\n다른 팀 도시 → **통행료** 지불!\n**3단계** 등급 — 비쌀수록 수익 UP!', bodyKoSmall: '$ 구매4 통행료8 · $$ 구매6 통행료12 · $$$ 구매10 통행료20' },
+    { title: 'Mini Games', sub: '누가 밟든 전원 참여! 역전의 기회입니다', body: 'Land here → **Everyone** plays!', bodySmall: '🥇 1st +20pts  🥈 2nd +10pts  🥉 3rd +5pts', bodyKo: '이 칸에 도착 → **전원** 참여!', bodyKoSmall: '🥇 1등 +20pts  🥈 2등 +10pts  🥉 3등 +5pts' },
     { title: '✨ Seoul Special ✨', sub: '서울에만 Salesforce Tower가 없지만\n여러분이 세울 수 있어요!', body: 'Buy Seoul → Pay **5pts** more\n→ Build **Salesforce Tower**!\nToll jumps to **20pts**', bodyKo: '서울 구매 후 → **5pts** 추가 투자\n→ **Salesforce Tower** 건설!\n통행료 **20pts**로 대폭 상승' },
     { title: 'Selling Towers', sub: '포인트가 부족할 때 전략적으로 활용하세요', body: 'Your turn → **Sell** your tower\nGet back **half** the cost', bodyKo: '자기 턴에 타워 **판매** 가능\n구매가의 **절반** 환불' },
-    { title: 'Mini Games', sub: '누가 밟든 전원 참여! 역전의 기회입니다', body: 'Land here → **Everyone** plays!', bodySmall: '🥇 1st +20pts  🥈 2nd +10pts  🥉 3rd +5pts', bodyKo: '이 칸에 도착 → **전원** 참여!', bodyKoSmall: '🥇 1등 +20pts  🥈 2등 +10pts  🥉 3등 +5pts' },
-    { title: 'START', sub: '보드를 한 바퀴 돌 때마다 보너스를 받습니다', body: 'Pass or land on **START**\n→ **+5pts** every time!', bodyKo: '**START**를 지나거나 도착\n→ 매번 **+5pts** 획득!' },
     { title: '🏆 Winning', sub: '라운드 완료 또는 제한시간 종료 시 게임이 끝납니다', body: 'All rounds complete **OR** time runs out\n→ **Most points** wins!', bodyKo: '모든 라운드 완료 **또는** 제한시간 종료\n→ **최다 포인트** 팀 우승!' }
   ];
 
@@ -376,16 +376,48 @@ window.Ohana = (() => {
       return;
     }
 
+    if (spotlight?.type === 'seoul_upgrade') {
+      const city = spaceByIndex(gameState, spotlight.spaceIndex);
+      const team = teamById(gameState, spotlight.teamId);
+      const canAfford = spotlight.canAfford;
+      center.innerHTML = `<div class="center-city">
+        <div class="city-hero-wrap">
+          ${city?.image ? `<img class="city-hero" src="${escapeHtml(city.image)}" alt="Seoul" />` : ''}
+          <div class="city-hero-title">
+            <h2>✨ Seoul ✨</h2>
+            <p class="city-hero-sub">Salesforce Tower 건설 기회!</p>
+          </div>
+          <div class="city-afford-overlay">
+            <p class="center-sub city-afford ${canAfford ? 'can-buy' : 'not-enough'}">${canAfford ? `Build Salesforce Tower for <span class="fee-amount-highlight">${spotlight.upgradeCost}pts</span>?` : `Can't afford (${spotlight.upgradeCost}pts needed)`}</p>
+          </div>
+        </div>
+        <div class="city-stats-bar">
+          <div class="city-stat-pill">
+            <span class="stat-icon">🏗️</span>
+            <div class="city-stat-label"><span class="lbl-en">COST</span><span class="lbl-ko">타워 구매</span></div>
+            <div class="city-stat-value">${spotlight.upgradeCost}</div>
+          </div>
+          <div class="city-stat-pill">
+            <span class="stat-icon">💰</span>
+            <div class="city-stat-label"><span class="lbl-en">NEW TOLL</span><span class="lbl-ko">통행료</span></div>
+            <div class="city-stat-value">${spotlight.upgradedFee}</div>
+          </div>
+        </div>
+      </div>`;
+      return;
+    }
+
     if (spotlight?.type === 'city') {
       const city = spaceByIndex(gameState, spotlight.spaceIndex);
       const landingTeam = teamById(gameState, spotlight.teamId);
       if (city) {
         const owner = city.ownerTeamId ? teamById(gameState, city.ownerTeamId) : null;
-        center.innerHTML = `<div class="center-city">
+        center.innerHTML = `<div class="center-city${city.id === 'seoul' && city.upgraded ? ' seoul-spotlight' : ''}">
           <div class="city-hero-wrap">
             <img class="city-hero" src="${escapeHtml(city.image)}" alt="${escapeHtml(city.name)} office spotlight" />
+            ${city.id === 'seoul' && city.upgraded ? '<div class="seoul-shimmer"></div>' : ''}
             <div class="city-hero-title">
-              <h2>${escapeHtml(city.label || city.name)}</h2>
+              <h2>${city.id === 'seoul' && city.upgraded ? '✨ ' : ''}${escapeHtml(city.label || city.name)}${city.id === 'seoul' && city.upgraded ? ' ✨' : ''}</h2>
               <p class="city-hero-sub">${escapeHtml(city.subtitle || '')}</p>
             </div>
             <div class="city-afford-overlay">
@@ -399,7 +431,7 @@ window.Ohana = (() => {
           <div class="city-stats-bar">
             <div class="city-stat-pill">
               <span class="stat-icon">🏗️</span>
-              <div class="city-stat-label"><span class="lbl-en">COST</span><span class="lbl-ko">건설비용</span></div>
+              <div class="city-stat-label"><span class="lbl-en">COST</span><span class="lbl-ko">구입비용</span></div>
               <div class="city-stat-value">${city.cost}</div>
             </div>
             <div class="city-stat-pill">

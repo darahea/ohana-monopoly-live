@@ -1834,21 +1834,25 @@ a { color: inherit; }
   z-index: 2;
 }
 .city-afford-overlay .city-afford {
-  background: rgba(0, 0, 0, 0.7);
-  backdrop-filter: blur(8px);
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(12px);
   border-radius: 16px;
-  padding: 16px 32px;
+  padding: 18px 36px;
   font-size: 32px;
   color: #fff;
   white-space: nowrap;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  border: 2px solid rgba(255, 255, 255, 0.2);
 }
 .city-afford-overlay .city-afford.can-buy {
-  background: rgba(46, 132, 74, 0.85);
+  background: rgba(46, 132, 74, 0.92);
   color: #fff;
+  border-color: rgba(255, 255, 255, 0.3);
 }
 .city-afford-overlay .city-afford.not-enough {
-  background: rgba(234, 0, 30, 0.8);
+  background: rgba(234, 0, 30, 0.9);
   color: #fff;
+  border-color: rgba(255, 255, 255, 0.3);
 }
 
 .center-city.tier-high .city-hero-title { background: linear-gradient(to top, rgba(3, 45, 96, .92) 30%, transparent); }
@@ -2032,6 +2036,67 @@ a { color: inherit; }
 @keyframes timerPulse {
   0%, 100% { transform: scale(1); }
   50% { transform: scale(1.05); }
+}
+
+/* Seoul special shimmer effect */
+.seoul-spotlight .seoul-shimmer {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(
+    105deg,
+    transparent 40%,
+    rgba(255, 215, 0, 0.25) 45%,
+    rgba(255, 255, 255, 0.4) 50%,
+    rgba(255, 215, 0, 0.25) 55%,
+    transparent 60%
+  );
+  background-size: 200% 100%;
+  animation: seoulShimmer 2.5s ease-in-out infinite;
+}
+@keyframes seoulShimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+.seoul-spotlight .city-hero-title h2 {
+  text-shadow: 0 0 12px rgba(255, 215, 0, 0.6), 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+/* Seoul tile on board — glow + shimmer when upgraded */
+.tile.seoul-upgraded {
+  box-shadow: var(--tile-shadow), 0 0 18px rgba(255, 215, 0, 0.5), 0 0 40px rgba(255, 215, 0, 0.25);
+  animation: seoulTileGlow 2.5s ease-in-out infinite;
+  position: relative;
+  overflow: hidden;
+}
+.tile.seoul-upgraded::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  background: linear-gradient(
+    105deg,
+    transparent 35%,
+    rgba(255, 215, 0, 0.3) 42%,
+    rgba(255, 255, 255, 0.5) 50%,
+    rgba(255, 215, 0, 0.3) 58%,
+    transparent 65%
+  );
+  background-size: 250% 100%;
+  background-position: 200% 0;
+  animation: seoulTileShimmer 8s ease-in-out infinite;
+}
+@keyframes seoulTileGlow {
+  0%, 100% { box-shadow: var(--tile-shadow), 0 0 18px rgba(255, 215, 0, 0.5), 0 0 40px rgba(255, 215, 0, 0.25); }
+  50% { box-shadow: var(--tile-shadow), 0 0 28px rgba(255, 215, 0, 0.7), 0 0 56px rgba(255, 215, 0, 0.35); }
+}
+@keyframes seoulTileShimmer {
+  0%, 85% { background-position: 200% 0; opacity: 0; }
+  86% { opacity: 1; }
+  95% { background-position: -200% 0; opacity: 1; }
+  96%, 100% { background-position: -200% 0; opacity: 0; }
 }
 
 /* Responsive tweaks */

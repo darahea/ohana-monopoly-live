@@ -81,10 +81,28 @@
     const currentSpace = spaceByIndex(gameState, activeTeam?.position || 0);
     const lastLanding = gameState.game.lastLanding;
     const isFreshLanding = lastLanding && lastLanding.teamId === activeTeam?.id && Number(lastLanding.spaceIndex) === Number(activeTeam?.position);
-    if (!currentSpace || currentSpace.type !== 'city') {
+    const seoulUpgradePrompt = gameState.game.spotlight?.type === 'seoul_upgrade';
+
+    if (seoulUpgradePrompt) {
+      const spotlight = gameState.game.spotlight;
+      const canAfford = spotlight.canAfford;
+      $('towerDecision').innerHTML = `<div class="decision-card ${canAfford ? 'positive' : 'warning'}">
+        <strong>✨ Seoul — Salesforce Tower 건설</strong>
+        <span class="muted">${canAfford ? '서울을 구매했습니다! 추가 투자로 Salesforce Tower를 건설하면 통행료가 대폭 상승합니다.' : '포인트가 부족하여 Salesforce Tower를 건설할 수 없습니다.'}</span>
+        <div class="decision-grid">
+          <div class="decision-metric"><span>팀 포인트</span><b>${activeTeam.points}</b></div>
+          <div class="decision-metric"><span>업그레이드 비용</span><b>${spotlight.upgradeCost}</b></div>
+          <div class="decision-metric"><span>업그레이드 후 통행료</span><b>${spotlight.upgradedFee}</b></div>
+        </div>
+        <div class="button-row">
+          ${canAfford ? `<button class="primary-button" type="button" data-action="upgrade-seoul">${spotlight.upgradeCost}포인트로 Salesforce Tower 건설</button>` : ''}
+          <button class="ghost-button" type="button" data-action="skip-seoul-upgrade">건너뛰기</button>
+        </div>
+      </div>`;
+    } else if (!currentSpace || currentSpace.type !== 'city') {
       $('towerDecision').innerHTML = `<div class="decision-card">
-        <strong>타워 구매 불가</strong>
-        <span class="muted">${escapeHtml(activeTeam?.name || '현재 팀')}은(는) 지금 ${escapeHtml(currentSpace?.label || currentSpace?.name || '보드')} 위에 있습니다. 타워는 비어 있는 도시에 막 착지했을 때만 구매할 수 있습니다.</span>
+        <strong>도시 구매 불가</strong>
+        <span class="muted">${escapeHtml(activeTeam?.name || '현재 팀')}은(는) 지금 ${escapeHtml(currentSpace?.label || currentSpace?.name || '보드')} 위에 있습니다. 도시는 빈 도시에 막 착지했을 때만 구매할 수 있습니다.</span>
       </div>`;
     } else {
       const owner = currentSpace.ownerTeamId ? teamById(gameState, currentSpace.ownerTeamId) : null;
@@ -94,18 +112,18 @@
       const cardClass = !owner && isFreshLanding ? 'positive' : owner && !ownedByActive ? 'warning' : '';
       let action = '';
       if (canBuild) {
-        action = `<button class="primary-button" type="button" data-action="build-current-tower">${currentSpace.cost}포인트로 타워 건설</button>`;
+        action = `<button class="primary-button" type="button" data-action="build-current-tower">${currentSpace.cost}포인트로 도시 구매</button>`;
       } else if (canUpgrade) {
-        action = `<button class="primary-button" type="button" data-action="upgrade-seoul">${currentSpace.upgradeCost}포인트로 Salesforce Tower 건설 (통행료 ${currentSpace.upgradedFee}pts)</button>`;
+        action = `<div class="button-row"><button class="primary-button" type="button" data-action="upgrade-seoul">${currentSpace.upgradeCost}포인트로 Salesforce Tower 건설 (통행료 ${currentSpace.upgradedFee}pts)</button><button class="ghost-button" type="button" data-action="skip-seoul-upgrade">건너뛰기</button></div>`;
       } else if (!owner && isFreshLanding && activeTeam.points < currentSpace.cost) {
-        action = `<span class="muted">포인트가 부족합니다. ${activeTeam.name}에게 ${currentSpace.cost - activeTeam.points}포인트가 더 필요합니다.</span>`;
+        action = `<span class="muted">포인트가 부족하여 도시를 구매할 수 없습니다. ${activeTeam.name}에게 ${currentSpace.cost - activeTeam.points}포인트가 더 필요합니다.</span>`;
       } else if (!owner) {
         action = `<span class="muted">현재 팀이 이 칸에 막 착지한 직후에만 타워를 구매할 수 있습니다.</span>`;
       } else {
         action = `<span class="muted">타워 소유: ${escapeHtml(owner?.name || '알 수 없음')}${currentSpace.upgraded ? ' (Salesforce Tower)' : ''}</span>`;
       }
       const guidanceText = canBuild
-        ? '현재 팀에게 타워 구매 의사를 확인하고, 원하면 아래 버튼을 누르세요.'
+        ? '현재 팀에게 도시 구매 의사를 확인하고, 원하면 아래 버튼을 누르세요.'
         : canUpgrade ? '서울에 Salesforce Tower를 건설할 수 있습니다!' : '';
       $('towerDecision').innerHTML = `<div class="decision-card ${cardClass}">
         <strong>${escapeHtml(currentSpace.label || currentSpace.name)}</strong>
@@ -113,7 +131,7 @@
         <div class="decision-grid">
           <div class="decision-metric"><span>팀 포인트</span><b>${activeTeam.points}</b></div>
           <div class="decision-metric"><span>구매가</span><b>${currentSpace.cost}</b></div>
-          <div class="decision-metric"><span>통행료</span><b>${currentSpace.fee}${currentSpace.upgradeCost && !currentSpace.upgraded ? ` → ${currentSpace.upgradedFee}` : ''}</b></div>
+          <div class="decision-metric"><span>통행료</span><b>${currentSpace.fee}</b></div>
         </div>
         ${action}
       </div>`;
@@ -384,6 +402,9 @@
         } else if (action === 'upgrade-seoul') {
           await run('/api/admin/upgrade-seoul');
           showToast('서울에 Salesforce Tower를 건설했습니다!');
+        } else if (action === 'skip-seoul-upgrade') {
+          await run('/api/admin/skip-seoul-upgrade');
+          showToast('서울 Salesforce Tower 건설을 건너뛰었습니다.');
         } else if (action === 'sell-tower') {
           await run('/api/admin/sell-tower', { cityIndex: Number(button.dataset.cityIndex) });
           showToast('타워를 판매했습니다.');
