@@ -65,7 +65,7 @@ const DEFAULT_BOARD = [
   { id: 'tokyo', type: 'city', name: 'Tokyo', label: 'Tokyo', subtitle: '도쿄, 일본', tier: 'high', tag: 'Tower', cost: 10, fee: 8, image: '/assets/cities/tokyo.webp' },                              // 16
   { id: 'dublin', type: 'city', name: 'Dublin', label: 'Dublin', subtitle: '더블린, 아일랜드', tier: 'high', cost: 10, fee: 8, image: '/assets/cities/dublin.webp' },                                  // 17
   { id: 'mini-4', type: 'mini', name: 'Mini Game', label: 'Mini Game' },                                                                                                                                // 18
-  { id: 'seoul', type: 'city', name: 'Seoul', label: 'Seoul', subtitle: '서울, 대한민국', tier: 'high', tag: 'Hometown', cost: 10, fee: 8, image: '/assets/cities/seoul.webp' }                        // 19
+  { id: 'seoul', type: 'city', name: 'Seoul', label: 'Seoul', subtitle: '서울, 대한민국', tier: 'high', tag: 'Hometown', cost: 10, fee: 8, upgradeCost: 5, upgradedFee: 20, image: '/assets/cities/seoul.webp' }  // 19
 ];
 
 const app = express();
@@ -95,7 +95,7 @@ function makeInitialTeams(count) {
 
 function createInitialState(teamCount = DEFAULT_TEAM_COUNT) {
   const teams = makeInitialTeams(teamCount);
-  const board = DEFAULT_BOARD.map((space, index) => ({ ...space, index, ownerTeamId: null }));
+  const board = DEFAULT_BOARD.map((space, index) => ({ ...space, index, ownerTeamId: null, upgraded: false }));
   return {
     version: STATE_VERSION,
     title: 'Ohana Monopoly',
@@ -520,6 +520,22 @@ function buildCurrentTower() {
   scheduleAutoAdvance(3500, 'tower_built');
 }
 
+function upgradeSeoulTower() {
+  if (state.game.status !== 'active') throw bad('게임을 시작한 후 업그레이드할 수 있습니다.');
+  if (state.game.moving) throw bad('이동이 끝난 후 다시 시도해 주세요.');
+  const team = currentTeam();
+  const space = state.board.find((s) => s.id === 'seoul');
+  if (!space) throw bad('서울 도시를 찾을 수 없습니다.');
+  if (space.ownerTeamId !== team.id) throw bad('서울을 소유한 팀만 업그레이드할 수 있습니다.');
+  if (space.upgraded) throw bad('서울 타워는 이미 업그레이드되었습니다.');
+  const cost = space.upgradeCost || 5;
+  if (team.points < cost) throw bad(`업그레이드에 ${cost}포인트가 필요합니다.`);
+  team.points -= cost;
+  space.upgraded = true;
+  space.fee = space.upgradedFee || 20;
+  addLog(`${team.name}이(가) 서울에 Salesforce Tower를 건설했습니다! 통행료 ${space.fee}pts`, 'tower');
+}
+
 function sellTowerForActiveTeam(cityIndex) {
   if (state.game.status !== 'active') throw bad('게임을 시작한 후 타워를 판매할 수 있습니다.');
   if (state.game.moving) throw bad('이동이 끝난 후 다시 시도해 주세요.');
@@ -665,6 +681,7 @@ app.post('/api/admin/previous-turn', (_req, res) => mutate(res, () => {
 }));
 
 app.post('/api/admin/build-current-tower', (_req, res) => mutate(res, () => { buildCurrentTower(); }));
+app.post('/api/admin/upgrade-seoul', (_req, res) => mutate(res, () => { upgradeSeoulTower(); }));
 app.post('/api/admin/sell-tower', (req, res) => mutate(res, () => { sellTowerForActiveTeam(req.body.cityIndex); }));
 app.post('/api/admin/remove-tower', (req, res) => mutate(res, () => { removeTower(req.body.cityIndex); }));
 
@@ -698,7 +715,7 @@ app.post('/api/admin/clear-spotlight', (_req, res) => mutate(res, () => {
 }));
 
 
-const TUTORIAL_SLIDE_COUNT = 8;
+const TUTORIAL_SLIDE_COUNT = 10;
 
 app.post('/api/admin/tutorial-start', (_req, res) => mutate(res, () => {
   state.game.tutorial = { slide: 0 };

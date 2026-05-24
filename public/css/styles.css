@@ -1368,12 +1368,13 @@ a { color: inherit; }
 }
 .tutorial-overlay.hidden { display: none; }
 .tutorial-overlay-card {
-  background: rgba(255, 255, 255, 0.95);
+  position: relative;
+  background: rgba(255, 255, 255, 0.96);
   border-radius: 32px;
-  padding: 60px 80px;
-  max-width: 800px;
+  padding: 56px 72px;
+  max-width: 720px;
   width: 90%;
-  text-align: center;
+  text-align: left;
   box-shadow: 0 24px 80px rgba(0, 0, 0, 0.3);
 }
 .tutorial-cover {
@@ -1381,6 +1382,7 @@ a { color: inherit; }
   flex-direction: column;
   align-items: center;
   gap: 24px;
+  text-align: center;
 }
 .tutorial-cover-img {
   width: 320px;
@@ -1392,42 +1394,80 @@ a { color: inherit; }
   font-weight: 700;
   color: var(--sf-blue-dark);
   margin: 0;
-  font-family: var(--font-ko);
+  font-family: var(--font-en);
 }
 .tutorial-title {
-  font-size: 52px;
-  font-weight: 700;
-  margin: 0 0 28px;
+  font-size: 40px;
+  font-weight: 800;
+  margin: 0 0 24px;
   color: var(--sf-blue-dark);
+  font-family: var(--font-en);
+  text-align: center;
+}
+.tutorial-sub {
+  font-size: 15px;
+  color: var(--muted);
+  margin: -12px 0 20px;
   font-family: var(--font-ko);
+  line-height: 1.5;
+  text-align: center;
 }
 .tutorial-body {
-  font-size: 32px;
-  line-height: 1.7;
+  font-size: 28px;
+  line-height: 2;
   margin: 0;
   color: var(--ink);
   font-family: var(--font-en);
 }
+.tutorial-body strong {
+  font-size: 34px;
+  font-weight: 800;
+  color: var(--sf-blue);
+}
+.tutorial-body-ko strong {
+  font-size: 28px;
+  color: var(--sf-blue);
+}
+.tutorial-dollar {
+  color: #ffab00;
+  font-weight: 800;
+}
+.tutorial-astro {
+  position: absolute;
+  top: -60px;
+  right: -40px;
+  width: 240px;
+  height: 240px;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 12px rgba(0,0,0,0.2));
+  pointer-events: none;
+}
 .tutorial-body-small {
-  font-size: 16px;
-  margin-top: 12px;
+  font-size: 20px;
+  margin-top: 16px;
+  line-height: 2;
+  opacity: 0.8;
 }
 .tutorial-body-ko {
-  margin-top: 20px;
-  padding-top: 20px;
+  margin-top: 24px;
+  padding-top: 24px;
   border-top: 1px solid var(--line);
   color: var(--muted);
   font-family: var(--font-ko);
+  font-size: 24px;
+  line-height: 2;
 }
 .tutorial-body-ko.tutorial-body-small {
   border-top: none;
   margin-top: 8px;
   padding-top: 0;
+  font-size: 18px;
 }
 .tutorial-page {
-  margin-top: 36px;
-  font-size: 18px;
+  margin-top: 32px;
+  font-size: 16px;
   color: var(--muted);
+  text-align: center;
 }
 .workshop-title {
   font-size: 32px !important;
