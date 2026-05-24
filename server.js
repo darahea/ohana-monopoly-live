@@ -102,7 +102,7 @@ function createInitialState(teamCount = DEFAULT_TEAM_COUNT) {
     createdAt: now(),
     updatedAt: now(),
     settings: { startPoints: 5, passStartPoints: 5, miniGameAwards: [20, 10, 5], moveStepMs: MOVE_STEP_MS, maxRounds: 3 },
-    game: { status: 'ready', round: 1, currentTurnIndex: 0, turnsPlayed: 0, lastDice: null, lastLanding: null, spotlight: null, activeMiniGame: null, moving: null, startedAt: null, endedAt: null, laps: {} },
+    game: { status: 'ready', round: 1, currentTurnIndex: 0, turnsPlayed: 0, lastDice: null, lastLanding: null, spotlight: null, activeMiniGame: null, moving: null, startedAt: null, endedAt: null, laps: {}, timer: null },
     teams,
     board,
     pendingFees: [],
@@ -531,6 +531,7 @@ function sellTowerForActiveTeam(cityIndex) {
   const refund = Math.floor(Number(space.cost || 0) / 2);
   space.ownerTeamId = null;
   team.points += refund;
+  state.game.spotlight = { type: 'tower_sold', teamId: team.id, spaceIndex: index, cityLabel: space.label, refund, at: now() };
   addLog(`${team.name}이(가) ${space.label} 타워를 ${refund}포인트에 판매했습니다.`, 'tower');
 }
 
@@ -673,6 +674,32 @@ app.post('/api/admin/clear-mini-game', (_req, res) => mutate(res, () => {
 app.post('/api/admin/clear-spotlight', (_req, res) => mutate(res, () => {
   state.game.spotlight = null;
   addLog('스포트라이트가 제거되었습니다.', 'system');
+}));
+
+app.post('/api/admin/start-timer', (req, res) => mutate(res, () => {
+  const seconds = Number(req.body.seconds);
+  if (!Number.isInteger(seconds) || seconds < 1 || seconds > 600) throw bad('타이머 값은 1~600초 사이의 정수여야 합니다.');
+  state.game.timer = { endAt: new Date(Date.now() + seconds * 1000).toISOString(), duration: seconds, paused: false };
+  addLog(`타이머가 ${Math.ceil(seconds / 60)}분으로 시작되었습니다.`, 'system');
+}));
+
+app.post('/api/admin/pause-timer', (_req, res) => mutate(res, () => {
+  if (!state.game.timer || state.game.timer.paused) throw bad('타이머가 실행 중이 아닙니다.');
+  const remaining = Math.max(0, Math.ceil((new Date(state.game.timer.endAt).getTime() - Date.now()) / 1000));
+  state.game.timer = { remaining, paused: true };
+  addLog('타이머가 일시정지되었습니다.', 'system');
+}));
+
+app.post('/api/admin/resume-timer', (_req, res) => mutate(res, () => {
+  if (!state.game.timer || !state.game.timer.paused) throw bad('일시정지된 타이머가 없습니다.');
+  const seconds = state.game.timer.remaining;
+  state.game.timer = { endAt: new Date(Date.now() + seconds * 1000).toISOString(), duration: seconds, paused: false };
+  addLog('타이머가 재개되었습니다.', 'system');
+}));
+
+app.post('/api/admin/stop-timer', (_req, res) => mutate(res, () => {
+  state.game.timer = null;
+  addLog('타이머가 정지되었습니다.', 'system');
 }));
 
 const TUTORIAL_SLIDE_COUNT = 8;

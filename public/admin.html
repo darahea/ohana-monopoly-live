@@ -84,6 +84,14 @@
               <button class="ghost-button" id="forceNextTurnBtn" type="button">강제 진행</button>
               <button class="ghost-button" id="clearSpotlightBtn" type="button">스포트라이트 제거</button>
             </div>
+            <div class="button-row wrap spacing-top">
+              <label class="dice-input-label">타이머 (분)
+                <input id="timerMinutesInput" type="number" min="1" max="10" value="2" style="width:60px" />
+              </label>
+              <button class="success-button" id="timerStartBtn" type="button">타이머 시작</button>
+              <button class="ghost-button" id="timerPauseBtn" type="button">일시정지</button>
+              <button class="danger-button" id="timerStopBtn" type="button">정지</button>
+            </div>
             <p class="muted">"이전 팀" 버튼은 다음 팀을 실수로 누른 경우 되돌리기에 사용하세요. 미니게임을 건너뛰거나 막힌 동작을 넘어갈 때만 "강제 진행"을 사용하세요.</p>
           </article>
 

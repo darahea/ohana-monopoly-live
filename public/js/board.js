@@ -13,9 +13,142 @@
     gameStatusLabel
   } = window.Ohana;
 
+  // === Sound Effects (Web Audio API) ===
+  let audioCtx = null;
+  function getAudioCtx() {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    return audioCtx;
+  }
+  document.addEventListener('click', () => { getAudioCtx(); }, { once: true });
+  document.addEventListener('keydown', () => { getAudioCtx(); }, { once: true });
+
+  function playTone(freq, duration, type = 'sine', volume = 0.3) {
+    const ctx = getAudioCtx();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = type;
+    osc.frequency.value = freq;
+    gain.gain.setValueAtTime(volume, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + duration);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start();
+    osc.stop(ctx.currentTime + duration);
+  }
+
+  function sfxMove() {
+    playTone(880, 0.08, 'square', 0.15);
+  }
+
+  function sfxToll() {
+    playTone(220, 0.15, 'sawtooth', 0.25);
+    setTimeout(() => playTone(180, 0.2, 'sawtooth', 0.2), 100);
+  }
+
+  function sfxMiniGame() {
+    [523, 659, 784, 1047].forEach((f, i) => {
+      setTimeout(() => playTone(f, 0.15, 'square', 0.2), i * 100);
+    });
+  }
+
+  function sfxBuild() {
+    playTone(440, 0.1, 'triangle', 0.25);
+    setTimeout(() => playTone(660, 0.1, 'triangle', 0.25), 80);
+    setTimeout(() => playTone(880, 0.15, 'triangle', 0.3), 160);
+  }
+
+  function sfxStart() {
+    [523, 659, 784].forEach((f, i) => {
+      setTimeout(() => playTone(f, 0.12, 'sine', 0.2), i * 80);
+    });
+  }
+
+  function sfxGameStart() {
+    [440, 554, 659, 880].forEach((f, i) => {
+      setTimeout(() => playTone(f, 0.2, 'square', 0.2), i * 150);
+    });
+  }
+
+  function sfxGameEnd() {
+    [880, 784, 659, 523].forEach((f, i) => {
+      setTimeout(() => playTone(f, 0.3, 'triangle', 0.25), i * 200);
+    });
+  }
+
+  function sfxTurnChange() {
+    playTone(660, 0.1, 'sine', 0.15);
+    setTimeout(() => playTone(880, 0.12, 'sine', 0.15), 80);
+  }
+  // === End Sound Effects ===
+
   let prevStatus = null;
   let prevSpotlight = null;
   let prevBoardOwners = null;
+  let prevTeamPoints = null;
+  let prevTurnIndex = null;
+  let prevMovingStep = null;
+  const trendMap = {}; // { teamId: { direction: 'up'|'down', at: timestamp } }
+
+  // Timer state
+  let timerInterval = null;
+  let timerEndAt = null;
+
+  function updateTimerDisplay() {
+    const display = $('timerDisplay');
+    if (!display) return;
+    if (!timerEndAt) {
+      display.classList.add('hidden');
+      return;
+    }
+    const remaining = Math.max(0, Math.ceil((new Date(timerEndAt).getTime() - Date.now()) / 1000));
+    if (remaining <= 0) {
+      display.textContent = "TIME'S UP!";
+      display.classList.remove('hidden');
+      display.classList.add('timer-expired');
+      clearInterval(timerInterval);
+      timerInterval = null;
+      setTimeout(() => {
+        display.classList.add('hidden');
+        display.classList.remove('timer-expired');
+        timerEndAt = null;
+      }, 3000);
+      return;
+    }
+    const minutes = Math.floor(remaining / 60);
+    const seconds = remaining % 60;
+    display.textContent = `${minutes}:${String(seconds).padStart(2, '0')}`;
+    display.classList.remove('hidden', 'timer-expired');
+  }
+
+  function syncTimer(gameState) {
+    const timer = gameState.game?.timer;
+    const display = $('timerDisplay');
+    if (!display) return;
+
+    if (timer && timer.paused) {
+      if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+      timerEndAt = null;
+      const minutes = Math.floor(timer.remaining / 60);
+      const seconds = timer.remaining % 60;
+      display.textContent = `⏸ ${minutes}:${String(seconds).padStart(2, '0')}`;
+      display.classList.remove('hidden', 'timer-expired');
+    } else if (timer && timer.endAt) {
+      if (timerEndAt !== timer.endAt) {
+        timerEndAt = timer.endAt;
+        if (timerInterval) clearInterval(timerInterval);
+        timerInterval = setInterval(updateTimerDisplay, 200);
+        updateTimerDisplay();
+      }
+    } else {
+      if (timerEndAt) {
+        timerEndAt = null;
+        if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+        display.classList.add('hidden');
+        display.classList.remove('timer-expired');
+      }
+    }
+  }
 
   function render(gameState) {
     const isActive = gameState.game.status === 'active';
@@ -24,12 +157,15 @@
     renderRanking(gameState, activeTeam);
     renderBoard({ gameState, layerId: 'tilesLayer', centerId: 'centerSpotlight' });
     renderTutorialOverlay(gameState);
+    syncTimer(gameState);
 
     if (prevStatus && prevStatus !== 'active' && gameState.game.status === 'active') {
       showGameStartOverlay();
+      sfxGameStart();
     }
     if (prevStatus && prevStatus !== 'ended' && gameState.game.status === 'ended') {
       showGameEndOverlay();
+      sfxGameEnd();
     }
 
     const spotlight = gameState.game?.spotlight;
@@ -38,10 +174,12 @@
     if (spotlight && spotlightKey !== prevKey) {
       if (spotlight.type === 'fee_warning') {
         showDramaticFlash('danger');
+        sfxToll();
       } else if (spotlight.type === 'mini') {
         showAnnounceBanner('MINI GAME!', 'mini');
+        sfxMiniGame();
       } else if (spotlight.type === 'start') {
-        showFloatingPoints(`+${gameState.settings.passStartPoints}pts`);
+        sfxStart();
       }
     }
 
@@ -50,11 +188,42 @@
       for (let i = 0; i < currentOwners.length; i++) {
         if (!prevBoardOwners[i] && currentOwners[i]) {
           launchMiniConfetti();
+          sfxBuild();
           break;
         }
       }
     }
     prevBoardOwners = currentOwners;
+
+    const currentPoints = {};
+    gameState.teams.forEach((t) => { currentPoints[t.id] = t.points; });
+    if (prevTeamPoints) {
+      gameState.teams.forEach((t) => {
+        const prev = prevTeamPoints[t.id];
+        if (prev != null && t.points !== prev) {
+          const delta = t.points - prev;
+          showPointsChangeAtTeam(t.id, delta > 0 ? `+${delta}pts` : `${delta}pts`, delta > 0);
+          trendMap[t.id] = { direction: delta > 0 ? 'up' : 'down', at: Date.now() };
+        }
+      });
+    }
+    prevTeamPoints = currentPoints;
+
+    const currentTurnIndex = gameState.game.currentTurnIndex;
+    const movingStep = gameState.game?.moving?.step || null;
+    if (movingStep && movingStep !== prevMovingStep) {
+      sfxMove();
+    }
+    prevMovingStep = movingStep;
+
+    if (prevTurnIndex != null && currentTurnIndex !== prevTurnIndex && gameState.game.status === 'active') {
+      const team = gameState.teams[currentTurnIndex];
+      if (team) {
+        showTurnBanner(team.name, team.color);
+        sfxTurnChange();
+      }
+    }
+    prevTurnIndex = currentTurnIndex;
 
     prevStatus = gameState.game.status;
     prevSpotlight = spotlight;
@@ -100,10 +269,37 @@
     setTimeout(() => el.remove(), 2000);
   }
 
+  function showTurnBanner(teamName, teamColor) {
+    const el = document.createElement('div');
+    el.className = 'turn-banner';
+    el.style.setProperty('--banner-color', teamColor || '#0176d3');
+    el.textContent = `${teamName}'s Turn!`;
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 2000);
+  }
+
   function showFloatingPoints(text) {
     const el = document.createElement('div');
     el.className = 'floating-points';
     el.textContent = text;
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 2000);
+  }
+
+  function showPointsChangeAtTeam(teamId, text, isPositive) {
+    const row = document.querySelector(`.rank-row[data-team-id="${teamId}"]`);
+    if (row) {
+      spawnFloatingAtElement(row, text, isPositive);
+    }
+  }
+
+  function spawnFloatingAtElement(element, text, isPositive) {
+    const rect = element.getBoundingClientRect();
+    const el = document.createElement('div');
+    el.className = `floating-points-inline ${isPositive ? 'floating-points-gain' : 'floating-points-loss'}`;
+    el.textContent = text;
+    el.style.top = `${rect.top}px`;
+    el.style.left = `${rect.right + 8}px`;
     document.body.appendChild(el);
     setTimeout(() => el.remove(), 2000);
   }
@@ -190,7 +386,7 @@
     const rank = [...gameState.teams].sort((a, b) => b.points - a.points).findIndex((t) => t.id === activeTeam.id) + 1;
     const subtitle = moving
       ? `이동 중 · ${moving.step}/${moving.total}`
-      : `${towers} towers · ${activeTeam.points} pt · Now ${ordinal(rank)}`;
+      : `${towers} towers · ${activeTeam.points}pts · Now ${ordinal(rank)}`;
 
     const currentLap = (gameState.game?.laps?.[activeTeam?.id] || 0) + 1;
     $('roundDisplay').innerHTML = `Round ${currentLap} / ${maxRounds}`;
@@ -212,20 +408,29 @@
       .sort((a, b) => b.team.points - a.team.points || a.originalIdx - b.originalIdx);
 
     const finished = gameState.game?.finished || [];
-    $('rankingList').innerHTML = ranked.map(({ team }, rank) => {
+    const ranks = [];
+    for (let i = 0; i < ranked.length; i++) {
+      ranks[i] = (i === 0 || ranked[i].team.points !== ranked[i - 1].team.points) ? i + 1 : ranks[i - 1];
+    }
+    const now = Date.now();
+    $('rankingList').innerHTML = ranked.map(({ team }, idx) => {
       const isCurrent = activeTeam?.id === team.id;
       const isFinished = finished.includes(team.id);
       const towers = gameState.board.filter((s) => s.type === 'city' && s.ownerTeamId === team.id).length;
-      const rankLabel = ordinal(rank + 1);
+      const rankLabel = ordinal(ranks[idx]);
       const rowClass = isFinished ? 'is-finished' : isCurrent ? 'is-current' : '';
-      return `<div class="rank-row ${rowClass}" style="--team-color:${escapeHtml(team.color)}">
+      const trend = trendMap[team.id];
+      const trendHtml = (trend && now - trend.at < 3000)
+        ? `<span class="rank-trend rank-trend-${trend.direction}">${trend.direction === 'up' ? '▲' : '▼'}</span>`
+        : '';
+      return `<div class="rank-row ${rowClass}" data-team-id="${escapeHtml(team.id)}" style="--team-color:${escapeHtml(team.color)}">
         <div class="rank-badge">${rankLabel}</div>
         <div class="rank-team">
           <strong>${escapeHtml(team.name)}</strong>
-          <span>${towers} tower${towers !== 1 ? 's' : ''}${isFinished ? ' · Done' : ''}</span>
+          <span>${towers} tower${towers !== 1 ? 's' : ''}</span>
         </div>
         ${isCurrent ? '<img src="/assets/astro.png" alt="" class="rank-astro" />' : ''}
-        <div class="rank-points"><strong>${team.points}</strong><span>pts</span></div>
+        <div class="rank-points"><strong>${team.points}</strong><span>pts</span>${trendHtml}</div>
       </div>`;
     }).join('');
   }

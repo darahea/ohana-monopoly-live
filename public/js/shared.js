@@ -155,7 +155,7 @@ window.Ohana = (() => {
       body = `
         <div class="tile-body">
           <div class="tile-name">START</div>
-          <div class="tile-subtitle">+${gameState.settings.passStartPoints} points</div>
+          <div class="tile-subtitle">+${gameState.settings.passStartPoints}pts</div>
         </div>`;
     } else if (space.type === 'empty') {
       body = `
@@ -179,7 +179,7 @@ window.Ohana = (() => {
     { title: 'Basic Rules', body: 'Each team starts with 5pts\nBoard: 20 spaces (15 cities + 4 minigames + 1 START)\nRoll two dice to move', bodyKo: '각 팀 시작 포인트: 5pts\n보드: 20칸 (도시 15 + 미니게임 4 + START 1)\n주사위 두 번 굴려 이동합니다' },
     { title: 'Cities', body: 'Empty city → Purchase available\nOther team\'s city → Pay toll!', bodySmall: '$ Low: Buy 4pts / Toll 8pts\n$$ Mid: Buy 6pts / Toll 12pts\n$$$ High: Buy 10pts / Toll 20pts', bodyKo: '빈 도시 → 구매 가능\n다른 팀 도시 → 통행료 지불!', bodyKoSmall: '$ 저가: 구매 4pts / 통행료 8pts\n$$ 중가: 구매 6pts / 통행료 12pts\n$$$ 고가: 구매 10pts / 통행료 20pts' },
      { title: 'Selling Towers', body: 'You may sell your tower\nduring your own turn\nfor half the purchase cost', bodyKo: '자기 턴에 보유한 타워를\n절반 가격으로 판매 가능\n(포인트가 부족할 때 활용!)' },
-    { title: 'Minigames', body: 'When any team lands on a Minigame,\nALL teams participate!', bodySmall: '1st place: +20pts\n2nd place: +10pts\n3rd place: +5pts', bodyKo: '미니게임 칸에 도착하면\n모든 팀이 참여!', bodyKoSmall: '1등: +20pts\n2등: +10pts\n3등: +5pts' },
+    { title: 'Mini Games', body: 'When any team lands on a Minigame,\nALL teams participate!', bodySmall: '1st place: +20pts\n2nd place: +10pts\n3rd place: +5pts', bodyKo: '미니게임 칸에 도착하면\n모든 팀이 참여!', bodyKoSmall: '1등: +20pts\n2등: +10pts\n3등: +5pts' },
     { title: 'START Space', body: 'Earn +5pts each time\nyou pass or land on START!', bodyKo: 'START를 지나거나 도착할 때마다\n+5pts 획득!' },
     { title: 'Winning', body: 'When all rounds are complete,\nthe team with the most points wins!\n\nGood luck!', bodyKo: '설정된 라운드가 끝나면\n가장 많은 포인트를 가진 팀이 우승!\n\nGood luck!' }
   ];
@@ -253,15 +253,24 @@ window.Ohana = (() => {
       const sorted = [...(gameState.teams || [])].sort((a, b) => b.points - a.points);
       const winner = sorted[0];
       const podium = sorted.slice(0, 3);
+      const board = gameState.board || [];
+      const statsRows = sorted.map(t => {
+        const towers = board.filter(space => space.type === 'city' && space.ownerTeamId === t.id).length;
+        return `<div class="game-end-stats-row"><span class="fee-team-chip" style="--team-color:${escapeHtml(t.color || '#0176d3')}">${escapeHtml(t.name)}</span><span class="game-end-stats-towers">${towers} towers</span><span class="game-end-stats-pts">${t.points}pts</span></div>`;
+      }).join('');
       center.innerHTML = `<div class="center-ended">
         <h2 class="game-end-title">Game Complete</h2>
         <div class="game-end-winner" style="--team-color:${escapeHtml(winner?.color || '#0176d3')}">
           <span class="game-end-trophy">🏆</span>
           <span class="game-end-winner-name">${escapeHtml(winner?.name || 'Team')}</span>
-          <span class="game-end-winner-pts">${winner?.points || 0} pts</span>
+          <span class="game-end-winner-pts">${winner?.points || 0}pts</span>
         </div>
         <div class="game-end-podium">
           ${podium.map((t, i) => `<div class="podium-entry"><span class="podium-rank">${i + 1}${i === 0 ? 'st' : i === 1 ? 'nd' : 'rd'}</span><span class="podium-name" style="--team-color:${escapeHtml(t.color)}">${escapeHtml(t.name)}</span><span class="podium-pts">${t.points}pts</span></div>`).join('')}
+        </div>
+        <div class="game-end-stats">
+          <div class="game-end-stats-header">Team Summary</div>
+          ${statsRows}
         </div>
       </div>`;
       return;
@@ -285,8 +294,28 @@ window.Ohana = (() => {
         <img src="/assets/astro.png" alt="Astro" class="start-pass-astro" />
         <div class="start-pass-banner">
           <span class="fee-team-chip" style="--team-color:${escapeHtml(team?.color || '#0176d3')}">${escapeHtml(team?.name || 'Team')}</span>
-          <span class="start-pass-text">completed R${laps}</span>
+          <span class="start-pass-text">completed Round ${laps}</span>
           <span class="start-pass-bonus">+${gameState.settings.passStartPoints}pts</span>
+        </div>
+      </div>`;
+      return;
+    }
+
+    if (spotlight?.type === 'tower_sold') {
+      const team = teamById(gameState, spotlight.teamId);
+      const city = spaceByIndex(gameState, spotlight.spaceIndex);
+      center.innerHTML = `<div class="center-city">
+        <div class="city-hero-wrap">
+          ${city?.image ? `<img class="city-hero" src="${escapeHtml(city.image)}" alt="" />` : ''}
+          <div class="city-hero-title">
+            <h2>${escapeHtml(spotlight.cityLabel || '')}</h2>
+          </div>
+          <div class="fee-warning-banner" style="background:rgba(0,0,0,0.75)">
+            <div class="fee-warning-banner-text">
+              <span class="fee-team-chip" style="--team-color:${escapeHtml(team?.color || '#999')}">${escapeHtml(team?.name || 'Team')}</span>
+              <span style="color:#fff">sold tower for</span> <span class="fee-amount-highlight">+${spotlight.refund}pts</span>
+            </div>
+          </div>
         </div>
       </div>`;
       return;
@@ -313,12 +342,14 @@ window.Ohana = (() => {
         </div>
         <div class="city-stats-bar">
           <div class="city-stat-pill">
-            <div class="city-stat-label"><span class="lbl-en">TOLL FEE</span><span class="lbl-ko">통행료</span></div>
+            <span class="stat-icon">💰</span>
+            <div class="city-stat-label"><span class="lbl-en">TOLL</span><span class="lbl-ko">통행료</span></div>
             <div class="city-stat-value">${spotlight.feeAmount}</div>
           </div>
           <div class="city-stat-pill">
+            <span class="stat-icon">🏢</span>
             <div class="city-stat-label"><span class="lbl-en">OWNER</span><span class="lbl-ko">소유팀</span></div>
-            <div class="city-stat-value" style="font-size:24px;color:var(--team-color)">${escapeHtml(owner?.name || '—')}</div>
+            <div class="city-stat-value"><span class="fee-team-chip" style="--team-color:${escapeHtml(owner?.color || '#0176d3')};font-size:16px">${escapeHtml(owner?.name || '—')}</span></div>
           </div>
         </div>
       </div>`;
@@ -362,11 +393,13 @@ window.Ohana = (() => {
           </div>
           <div class="city-stats-bar">
             <div class="city-stat-pill">
+              <span class="stat-icon">🏗️</span>
               <div class="city-stat-label"><span class="lbl-en">COST</span><span class="lbl-ko">건설비용</span></div>
               <div class="city-stat-value">${city.cost}</div>
             </div>
             <div class="city-stat-pill">
-              <div class="city-stat-label"><span class="lbl-en">FEE</span><span class="lbl-ko">통행료</span></div>
+              <span class="stat-icon">💰</span>
+              <div class="city-stat-label"><span class="lbl-en">TOLL</span><span class="lbl-ko">통행료</span></div>
               <div class="city-stat-value">${city.fee}</div>
             </div>
           </div>
