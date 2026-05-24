@@ -1,6 +1,7 @@
 (() => {
   const {
     $,
+    api,
     getState,
     subscribe,
     escapeHtml,
@@ -90,74 +91,63 @@
   let prevMovingStep = null;
   const trendMap = {}; // { teamId: { direction: 'up'|'down', at: timestamp } }
 
-  // Timer state
-  let timerInterval = null;
-  let timerEndAt = null;
+  // Game timer state
+  let gameTimerInterval = null;
+  let gameTimerEndAt = null;
+  let gameTimerExpired = false;
 
-  function updateTimerDisplay() {
-    const display = $('timerDisplay');
-    if (!display) return;
-    if (!timerEndAt) {
-      display.classList.add('hidden');
+  function updateGameTimer() {
+    const display = $('gameTimerDisplay');
+    if (!display || !gameTimerEndAt) return;
+    const remaining = Math.max(0, Math.ceil((new Date(gameTimerEndAt).getTime() - Date.now()) / 1000));
+    if (remaining <= 0 && !gameTimerExpired) {
+      gameTimerExpired = true;
+      display.textContent = "TIME OVER";
+      display.classList.add('game-timer-expired');
+      clearInterval(gameTimerInterval);
+      gameTimerInterval = null;
+      api('/api/admin/time-over').catch(() => {});
       return;
     }
-    const remaining = Math.max(0, Math.ceil((new Date(timerEndAt).getTime() - Date.now()) / 1000));
-    if (remaining <= 0) {
-      display.textContent = "TIME'S UP!";
-      display.classList.remove('hidden');
-      display.classList.add('timer-expired');
-      clearInterval(timerInterval);
-      timerInterval = null;
-      setTimeout(() => {
-        display.classList.add('hidden');
-        display.classList.remove('timer-expired');
-        timerEndAt = null;
-      }, 3000);
-      return;
+    if (remaining > 0) {
+      const mins = Math.floor(remaining / 60);
+      const secs = remaining % 60;
+      display.textContent = `⏱ ${mins}:${String(secs).padStart(2, '0')}`;
+      display.classList.remove('game-timer-expired');
+      display.classList.toggle('game-timer-warn', remaining <= 300 && remaining > 60);
+      display.classList.toggle('game-timer-critical', remaining <= 60);
     }
-    const minutes = Math.floor(remaining / 60);
-    const seconds = remaining % 60;
-    display.textContent = `${minutes}:${String(seconds).padStart(2, '0')}`;
-    display.classList.remove('hidden', 'timer-expired');
   }
 
-  function syncTimer(gameState) {
-    const timer = gameState.game?.timer;
-    const display = $('timerDisplay');
+  function syncGameTimer(gameState) {
+    const display = $('gameTimerDisplay');
     if (!display) return;
-
-    if (timer && timer.paused) {
-      if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
-      timerEndAt = null;
-      const minutes = Math.floor(timer.remaining / 60);
-      const seconds = timer.remaining % 60;
-      display.textContent = `⏸ ${minutes}:${String(seconds).padStart(2, '0')}`;
-      display.classList.remove('hidden', 'timer-expired');
-    } else if (timer && timer.endAt) {
-      if (timerEndAt !== timer.endAt) {
-        timerEndAt = timer.endAt;
-        if (timerInterval) clearInterval(timerInterval);
-        timerInterval = setInterval(updateTimerDisplay, 200);
-        updateTimerDisplay();
+    const gameTimer = gameState.game?.gameTimer;
+    if (gameTimer && gameTimer.endAt && gameState.game.status === 'active') {
+      display.classList.remove('hidden');
+      if (gameTimerEndAt !== gameTimer.endAt) {
+        gameTimerEndAt = gameTimer.endAt;
+        gameTimerExpired = false;
+        if (gameTimerInterval) clearInterval(gameTimerInterval);
+        gameTimerInterval = setInterval(updateGameTimer, 1000);
+        updateGameTimer();
       }
     } else {
-      if (timerEndAt) {
-        timerEndAt = null;
-        if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
-        display.classList.add('hidden');
-        display.classList.remove('timer-expired');
-      }
+      display.classList.add('hidden');
+      if (gameTimerInterval) { clearInterval(gameTimerInterval); gameTimerInterval = null; }
+      gameTimerEndAt = null;
+      gameTimerExpired = false;
     }
   }
 
   function render(gameState) {
     const isActive = gameState.game.status === 'active';
     const activeTeam = isActive ? gameState.teams[gameState.game.currentTurnIndex] : null;
-    renderCurrentTurnCard(gameState, activeTeam);
+    renderRoundDisplay(gameState, activeTeam);
     renderRanking(gameState, activeTeam);
     renderBoard({ gameState, layerId: 'tilesLayer', centerId: 'centerSpotlight' });
     renderTutorialOverlay(gameState);
-    syncTimer(gameState);
+    syncGameTimer(gameState);
 
     if (prevStatus && prevStatus !== 'active' && gameState.game.status === 'active') {
       showGameStartOverlay();
@@ -359,46 +349,19 @@
     }
   }
 
-  function renderCurrentTurnCard(gameState, activeTeam) {
-    const maxRounds = gameState.settings?.maxRounds || '—';
-
+  function renderRoundDisplay(gameState, activeTeam) {
+    const maxRounds = gameState.settings?.maxRounds || 3;
     if (!activeTeam) {
-      $('roundDisplay').innerHTML = `Round — / ${maxRounds}`;
-      $('currentTurnCard').innerHTML = `
-        <div class="ct-main">
-          <div class="ct-text"><div class="ct-name">Are you ready?</div></div>
-        </div>`;
+      $('roundDisplay').innerHTML = `<div class="round-label">ROUND</div>
+        <div class="round-progress-bar"><div class="round-progress-fill" style="width:0%"></div></div>
+        <div class="round-nums">— / ${maxRounds}</div>`;
       return;
     }
-
-    const dice = gameState.game.lastDice;
-    const position = formatPosition(gameState, activeTeam?.position || 0);
-    const moving = gameState.game.moving;
-
-    const isCurrentDice = dice && dice.teamId === activeTeam?.id;
-    const diceDisplay = isCurrentDice
-      ? (dice.dice1 != null && dice.dice2 != null
-          ? `<span class="dice-face">${dice.dice1}</span><span class="dice-plus">+</span><span class="dice-face">${dice.dice2}</span><span class="dice-eq">=</span><span class="dice-total">${dice.value}</span>`
-          : `<span class="dice-total">${dice.value}</span>`)
-      : '';
-
-    const towers = gameState.board.filter((s) => s.type === 'city' && s.ownerTeamId === activeTeam.id).length;
-    const rank = [...gameState.teams].sort((a, b) => b.points - a.points).findIndex((t) => t.id === activeTeam.id) + 1;
-    const subtitle = moving
-      ? `이동 중 · ${moving.step}/${moving.total}`
-      : `${towers} towers · ${activeTeam.points}pts · Now ${ordinal(rank)}`;
-
-    const currentLap = (gameState.game?.laps?.[activeTeam?.id] || 0) + 1;
-    $('roundDisplay').innerHTML = `Round ${currentLap} / ${maxRounds}`;
-    $('currentTurnCard').innerHTML = `
-      <div class="ct-main">
-        <span class="ct-dot" style="--team-color:${escapeHtml(activeTeam?.color || '#0176d3')}"></span>
-        <div class="ct-text">
-          <div class="ct-name">${escapeHtml(activeTeam?.name || '—')}</div>
-          <div class="ct-sub">${escapeHtml(subtitle)}</div>
-        </div>
-      </div>
-    `;
+    const currentLap = Math.min((gameState.game?.laps?.[activeTeam?.id] || 0) + 1, maxRounds);
+    const pct = Math.round((currentLap / maxRounds) * 100);
+    $('roundDisplay').innerHTML = `<div class="round-label">ROUND</div>
+      <div class="round-progress-bar"><div class="round-progress-fill" style="width:${pct}%"></div></div>
+      <div class="round-nums"><span class="round-current">${currentLap}</span> / ${maxRounds}</div>`;
   }
 
   function renderRanking(gameState, activeTeam) {

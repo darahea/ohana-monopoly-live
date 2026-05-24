@@ -176,12 +176,12 @@ window.Ohana = (() => {
   const TUTORIAL_SLIDES = [
     { type: 'cover', title: 'Tutorial', image: '/assets/brand/ohana-monopoly-badge.png' },
     { title: 'Game Introduction', body: 'A team-based board game!\nBuy cities, collect tolls, and\naccumulate the most points to win!', bodyKo: '팀 대항 보드게임!\n도시를 사고, 통행료를 받고,\n가장 많은 포인트를 모으면 승리!' },
-    { title: 'Basic Rules', body: 'Each team starts with 5pts\nBoard: 20 spaces (15 cities + 4 minigames + 1 START)\nRoll two dice to move', bodyKo: '각 팀 시작 포인트: 5pts\n보드: 20칸 (도시 15 + 미니게임 4 + START 1)\n주사위 두 번 굴려 이동합니다' },
+    { title: 'Basic Rules', body: 'Each team starts with 5pts\nBoard: 20 spaces (15 cities + 4 minigames + 1 START)\nRoll two dice, add the numbers,\nand move that many spaces!', bodyKo: '각 팀 시작 포인트: 5pts\n보드: 20칸 (도시 15 + 미니게임 4 + START 1)\n주사위 2개를 굴려 나온 숫자를 더한 만큼 이동!' },
     { title: 'Cities', body: 'Empty city → Purchase available\nOther team\'s city → Pay toll!', bodySmall: '$ Low: Buy 4pts / Toll 8pts\n$$ Mid: Buy 6pts / Toll 12pts\n$$$ High: Buy 10pts / Toll 20pts', bodyKo: '빈 도시 → 구매 가능\n다른 팀 도시 → 통행료 지불!', bodyKoSmall: '$ 저가: 구매 4pts / 통행료 8pts\n$$ 중가: 구매 6pts / 통행료 12pts\n$$$ 고가: 구매 10pts / 통행료 20pts' },
      { title: 'Selling Towers', body: 'You may sell your tower\nduring your own turn\nfor half the purchase cost', bodyKo: '자기 턴에 보유한 타워를\n절반 가격으로 판매 가능\n(포인트가 부족할 때 활용!)' },
     { title: 'Mini Games', body: 'When any team lands on a Minigame,\nALL teams participate!', bodySmall: '1st place: +20pts\n2nd place: +10pts\n3rd place: +5pts', bodyKo: '미니게임 칸에 도착하면\n모든 팀이 참여!', bodyKoSmall: '1등: +20pts\n2등: +10pts\n3등: +5pts' },
     { title: 'START Space', body: 'Earn +5pts each time\nyou pass or land on START!', bodyKo: 'START를 지나거나 도착할 때마다\n+5pts 획득!' },
-    { title: 'Winning', body: 'When all rounds are complete,\nthe team with the most points wins!\n\nGood luck!', bodyKo: '설정된 라운드가 끝나면\n가장 많은 포인트를 가진 팀이 우승!\n\nGood luck!' }
+    { title: 'Winning', body: 'When all teams finish their rounds\nor time runs out,\nthe team with the most points wins!\n\nGood luck!', bodyKo: '모든 팀이 라운드를 완료하거나\n제한시간이 끝났을 때\n가장 많은 포인트를 가진 팀이 우승!\n\nGood luck!' }
   ];
 
   function renderTutorialOverlay(gameState) {

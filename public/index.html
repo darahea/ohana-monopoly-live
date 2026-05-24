@@ -14,15 +14,12 @@
         <img src="/assets/brand/ohana-monopoly-logo.png" alt="Ohana Monopoly" class="brand-logo" />
       </div>
       <div id="roundDisplay" class="round-display"></div>
-      <!-- 큰 현재 턴 카드 (별도 강조) -->
-      <div id="currentTurnCard" class="current-turn-card-big"></div>
 
-      <!-- 랭킹 (점수 desc) -->
       <div class="ranking-header">
-        <span class="eyebrow light">현재 순위</span>
         <h2>Leaderboard</h2>
       </div>
       <div id="rankingList" class="ranking-list"></div>
+      <div id="gameTimerDisplay" class="game-timer-display hidden"></div>
     </aside>
 
     <section class="board-stage">
@@ -42,7 +39,6 @@
       <h1 class="game-start-title">Game Start!</h1>
     </div>
   </div>
-  <div id="timerDisplay" class="timer-display hidden"></div>
   <div id="toast" class="toast hidden"></div>
   <script src="/socket.io/socket.io.js"></script>
   <script src="/js/shared.js"></script>

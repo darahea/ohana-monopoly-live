@@ -46,12 +46,8 @@
     if (tutNext) tutNext.disabled = !tutActive;
     if (tutReset) tutReset.disabled = !tutActive;
     if (tutClose) tutClose.disabled = !tutActive;
-    const pauseBtn = $('timerPauseBtn');
-    if (pauseBtn) {
-      const timer = gameState.game?.timer;
-      pauseBtn.textContent = timer?.paused ? '재개' : '일시정지';
-      pauseBtn.disabled = !timer;
-    }
+    const durationInput = $('gameDurationInput');
+    if (durationInput) durationInput.value = String(gameState.settings.gameDurationMinutes || 110);
   }
 
   function renderSummary(gameState, activeTeam) {
@@ -317,27 +313,11 @@
       }));
     }
 
-    $('timerStartBtn').addEventListener('click', (event) => withButton(event.currentTarget, async () => {
-      const minutes = Number($('timerMinutesInput').value);
-      if (!minutes || minutes < 1 || minutes > 10) { showToast('1~10분 사이로 입력하세요.'); return; }
-      await run('/api/admin/start-timer', { seconds: minutes * 60 });
-      showToast(`타이머 ${minutes}분 시작`);
-    }));
-
-    $('timerPauseBtn').addEventListener('click', (event) => withButton(event.currentTarget, async () => {
-      const timer = currentState?.game?.timer;
-      if (timer && !timer.paused) {
-        await run('/api/admin/pause-timer');
-        showToast('타이머 일시정지');
-      } else if (timer && timer.paused) {
-        await run('/api/admin/resume-timer');
-        showToast('타이머 재개');
-      }
-    }));
-
-    $('timerStopBtn').addEventListener('click', (event) => withButton(event.currentTarget, async () => {
-      await run('/api/admin/stop-timer');
-      showToast('타이머 정지');
+    $('setGameDurationBtn').addEventListener('click', (event) => withButton(event.currentTarget, async () => {
+      const minutes = Number($('gameDurationInput').value);
+      if (!minutes || minutes < 1 || minutes > 180) { showToast('1~180분 사이로 입력하세요.'); return; }
+      await run('/api/admin/set-game-duration', { minutes });
+      showToast(`게임 시간 ${minutes}분으로 설정`);
     }));
   }
 
