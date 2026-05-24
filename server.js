@@ -226,15 +226,6 @@ function emitAndSave() {
   broadcast();
 }
 
-// Team rotation: each round starts with a different team to mitigate first-mover advantage.
-// turnsPlayed counts total turns since game start (0-indexed). For team count n:
-//   round = floor(turnsPlayed / n) + 1
-//   currentTurnIndex = (turnsPlayed + floor(turnsPlayed / n)) % n
-// This yields:
-//   Round 1: 0, 1, 2, ..., n-1
-//   Round 2: 1, 2, 3, ..., n-1, 0
-//   Round 3: 2, 3, ..., n-1, 0, 1
-//   ...
 function applyTurnFromCounter() {
   const n = state.teams.length;
   const T = state.game.turnsPlayed;
