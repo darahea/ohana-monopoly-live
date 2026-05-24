@@ -30,16 +30,26 @@ npm run dev
 - Passing or landing on START gives +5 points.
 - Landing on a Mini Game tile triggers a mini game for all teams.
 - Mini Game awards are: 1st +20, 2nd +10, 3rd +5.
-- Landing on an unowned city lets the active team buy a tower only if their current points are at least the tower cost.
-- Landing on another team's tower city charges the toll fee. Passing over a tower city does not charge a fee.
+- Landing on an unowned city lets the active team buy the city if their current points are at least the cost.
+- Landing on another team's city charges the toll fee. Passing over a city does not charge a fee.
 - If a team cannot cover a toll fee, its point balance can go negative. There is no bankruptcy state.
-- A team may sell towers only during that team's active turn.
-- Selling a tower refunds half of its original cost.
-- The admin sets the total number of rounds (laps) before game start (1–5).
+- A team may sell cities only during that team's active turn.
+- Selling a city refunds half of its original cost.
+- The admin sets the total number of rounds (laps) before game start (1–10).
+- A game timer (default 110 minutes) can also end the game when time runs out.
 - When a team completes all rounds, it is removed from the board and marked as "Done" on the leaderboard.
 - Completed teams are skipped in turn order.
-- The game ends automatically when all teams finish their rounds.
-- Turn order is always fixed: Team 1 → 2 → 3 → ... → 6.
+- The game ends automatically when all teams finish their rounds or time runs out.
+- Turn order rotates each round to mitigate first-mover advantage.
+
+### Seoul Special Rule
+
+Seoul has a unique 2-step purchase:
+
+1. **Buy the city** (10 pts) — same as other $$$ cities, toll starts at 8 pts.
+2. **Build Salesforce Tower** (additional 5 pts) — toll jumps to 20 pts.
+
+The tower build is offered immediately after buying Seoul, or on any subsequent landing on Seoul by the owner. It can be skipped and offered again later. A golden shimmer effect appears on the board tile once the tower is built.
 
 ## City list
 
@@ -59,7 +69,7 @@ npm run dev
 | 12 | Chicago | $ | 4 | 3 |
 | 13 | Tokyo (Tower) | $$$ | 10 | 8 |
 | 14 | Dublin | $$$ | 10 | 8 |
-| 15 | Seoul (Hometown) | $$$ | 10 | 8 |
+| 15 | Seoul (Hometown) | $$$ | 10 | 8 → 20 (with Salesforce Tower) |
 
 ## Replacing photos
 

@@ -6,9 +6,10 @@ Ohana Monopoly is a team-based board game where teams compete to earn the most p
 
 ## Setup
 
-- 2–6 teams, each starting with **20 points**
+- 2–10 teams, each starting with **5 points**
 - The board has **20 spaces**: 15 cities, 4 Mini Games, and 1 START
 - The admin controls the game from a separate console — no phones or logins needed from players
+- Game timer (default 110 minutes) and round limit (default 3) can be configured
 
 ## How to Play
 
@@ -22,13 +23,26 @@ Ohana Monopoly is a team-based board game where teams compete to earn the most p
 
 | Tier | Purchase Cost | Toll Fee |
 |------|-------------|----------|
-| $ (Low) | 4 pts | 8 pts |
-| $$ (Mid) | 6 pts | 12 pts |
-| $$$ (High) | 10 pts | 20 pts |
+| $ (Low) | 4 pts | 3 pts |
+| $$ (Mid) | 6 pts | 5 pts |
+| $$$ (High) | 10 pts | 8 pts |
 
 - **Empty city** → You may purchase it (if you have enough points)
 - **Your own city** → Nothing happens
 - **Another team's city** → You pay the toll fee to that team
+
+### Seoul Special (✨)
+
+Seoul has a unique 2-step purchase system:
+
+| Step | Cost | Toll Fee |
+|------|------|----------|
+| 1. Buy the city | 10 pts | 8 pts |
+| 2. Build Salesforce Tower | +5 pts | **20 pts** |
+
+- After buying Seoul, you are immediately asked if you want to build the Salesforce Tower
+- If you skip, the offer returns every time you land on Seoul again
+- Building the tower gives Seoul a special golden shimmer effect on the board
 
 ### Mini Game
 
@@ -49,14 +63,14 @@ Awards:
 - When a team completes all rounds, they are finished and removed from the board
 - The game ends automatically when all teams finish
 
-## Selling Towers
+## Selling Cities
 
-- You may sell your tower **only during your own turn**
+- You may sell your city **only during your own turn**
 - Selling refunds **half** of the original purchase cost
 
 ## Winning
 
-The team with the **most points** at the end of the game wins!
+The game ends when all rounds are complete **OR** the game timer runs out. The team with the **most points** wins!
 
 Points come from:
 - Passing START (+5 each lap)
@@ -66,12 +80,14 @@ Points come from:
 
 Points are spent on:
 - Purchasing cities
+- Building Salesforce Tower (Seoul only, +5 pts)
 - Paying toll fees when landing on other teams' cities
 
 ## Tips
 
 - Buy cities early to start collecting toll fees
 - $$$ cities are expensive but earn you the most when others land on them
+- Seoul with Salesforce Tower has the highest toll (20 pts) — worth the 15 pts total investment
 - Watch your points — you can go negative if you can't cover a toll fee
 - Mini Games are a great equalizer — everyone gets a chance to earn big points
 
