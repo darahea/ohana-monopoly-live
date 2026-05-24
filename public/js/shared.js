@@ -173,6 +173,59 @@ window.Ohana = (() => {
     </article>`;
   }
 
+  const TUTORIAL_SLIDES = [
+    { type: 'cover', title: 'Tutorial', image: '/assets/brand/ohana-monopoly-badge.png' },
+    { title: 'Game Introduction', body: 'A team-based board game!\nBuy cities, collect tolls, and\naccumulate the most points to win!', bodyKo: '팀 대항 보드게임!\n도시를 사고, 통행료를 받고,\n가장 많은 포인트를 모으면 승리!' },
+    { title: 'Basic Rules', body: 'Each team starts with 5pts\nBoard: 20 spaces (15 cities + 4 minigames + 1 START)\nRoll two dice to move', bodyKo: '각 팀 시작 포인트: 5pts\n보드: 20칸 (도시 15 + 미니게임 4 + START 1)\n주사위 두 번 굴려 이동합니다' },
+    { title: 'Cities', body: 'Empty city → Purchase available\nOther team\'s city → Pay toll!', bodySmall: '$ Low: Buy 4pts / Toll 8pts\n$$ Mid: Buy 6pts / Toll 12pts\n$$$ High: Buy 10pts / Toll 20pts', bodyKo: '빈 도시 → 구매 가능\n다른 팀 도시 → 통행료 지불!', bodyKoSmall: '$ 저가: 구매 4pts / 통행료 8pts\n$$ 중가: 구매 6pts / 통행료 12pts\n$$$ 고가: 구매 10pts / 통행료 20pts' },
+     { title: 'Selling Towers', body: 'You may sell your tower\nduring your own turn\nfor half the purchase cost', bodyKo: '자기 턴에 보유한 타워를\n절반 가격으로 판매 가능\n(포인트가 부족할 때 활용!)' },
+    { title: 'Minigames', body: 'When any team lands on a Minigame,\nALL teams participate!', bodySmall: '1st place: +20pts\n2nd place: +10pts\n3rd place: +5pts', bodyKo: '미니게임 칸에 도착하면\n모든 팀이 참여!', bodyKoSmall: '1등: +20pts\n2등: +10pts\n3등: +5pts' },
+    { title: 'START Space', body: 'Earn +5pts each time\nyou pass or land on START!', bodyKo: 'START를 지나거나 도착할 때마다\n+5pts 획득!' },
+    { title: 'Winning', body: 'When all rounds are complete,\nthe team with the most points wins!\n\nGood luck!', bodyKo: '설정된 라운드가 끝나면\n가장 많은 포인트를 가진 팀이 우승!\n\nGood luck!' }
+  ];
+
+  function renderTutorialOverlay(gameState) {
+    const overlay = $('tutorialOverlay');
+    if (!overlay) return;
+    const tutorial = gameState.game?.tutorial;
+    if (!tutorial) {
+      overlay.classList.add('hidden');
+      return;
+    }
+    overlay.classList.remove('hidden');
+    const slide = TUTORIAL_SLIDES[tutorial.slide];
+    if (!slide) {
+      overlay.classList.add('hidden');
+      return;
+    }
+    const contentSlides = TUTORIAL_SLIDES.filter((s) => s.type !== 'cover');
+    if (slide.type === 'cover') {
+      overlay.innerHTML = `<div class="tutorial-overlay-card tutorial-cover">
+        <img src="${slide.image}" alt="Ohana Monopoly" class="tutorial-cover-img" />
+        <h1 class="tutorial-cover-title">${escapeHtml(slide.title)}</h1>
+      </div>`;
+    } else {
+      const pageNum = contentSlides.indexOf(slide) + 1;
+      const smallBlock = slide.bodySmall
+        ? `<p class="tutorial-body tutorial-body-small">${escapeHtml(slide.bodySmall).replace(/\n/g, '<br>')}</p>`
+        : '';
+      const koBlock = slide.bodyKo
+        ? `<p class="tutorial-body tutorial-body-ko">${escapeHtml(slide.bodyKo).replace(/\n/g, '<br>')}</p>`
+        : '';
+      const koSmallBlock = slide.bodyKoSmall
+        ? `<p class="tutorial-body tutorial-body-ko tutorial-body-small">${escapeHtml(slide.bodyKoSmall).replace(/\n/g, '<br>')}</p>`
+        : '';
+      overlay.innerHTML = `<div class="tutorial-overlay-card">
+        <h2 class="tutorial-title">${escapeHtml(slide.title)}</h2>
+        <p class="tutorial-body">${escapeHtml(slide.body).replace(/\n/g, '<br>')}</p>
+        ${smallBlock}
+        ${koBlock}
+        ${koSmallBlock}
+        <p class="tutorial-page">${pageNum} / ${contentSlides.length}</p>
+      </div>`;
+    }
+  }
+
   function renderSpotlight(gameState, centerId) {
     const center = $(centerId);
     if (!center) return;
@@ -338,7 +391,7 @@ window.Ohana = (() => {
     center.innerHTML = `<div class="center-default">
       <div>
         <img src="/assets/brand/ohana-monopoly-badge.png" alt="Ohana Monopoly" class="center-default-logo" />
-        <div class="center-sub workshop-title">FY27 SE Workshop</div>
+        <div class="workshop-title center-sub">FY27 SE Workshop</div>
       </div>
     </div>`;
   }
@@ -364,6 +417,7 @@ window.Ohana = (() => {
     gridPosition,
     renderBoard,
     renderSpotlight,
+    renderTutorialOverlay,
     formatTime,
     formatPosition,
     showToast,

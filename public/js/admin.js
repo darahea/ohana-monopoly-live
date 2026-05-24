@@ -35,6 +35,17 @@
     renderCityTable(gameState);
     renderLog(gameState);
     renderBoard({ gameState, layerId: 'adminBoardTiles', centerId: null, mini: true });
+    const roundsSelect = $('maxRoundsSelect');
+    if (roundsSelect) roundsSelect.value = String(gameState.settings.maxRounds || 3);
+    const tutActive = Boolean(gameState.game?.tutorial);
+    const tutPrev = $('tutorialPrevBtn');
+    const tutNext = $('tutorialNextBtn');
+    const tutReset = $('tutorialResetBtn');
+    const tutClose = $('tutorialCloseBtn');
+    if (tutPrev) tutPrev.disabled = !tutActive;
+    if (tutNext) tutNext.disabled = !tutActive;
+    if (tutReset) tutReset.disabled = !tutActive;
+    if (tutClose) tutClose.disabled = !tutActive;
   }
 
   function renderSummary(gameState, activeTeam) {
@@ -270,6 +281,26 @@
     $('clearMiniGameBtn').addEventListener('click', (event) => withButton(event.currentTarget, async () => {
       await run('/api/admin/clear-mini-game');
       showToast('미니게임을 제거했습니다.');
+    }));
+
+    $('tutorialBtn').addEventListener('click', (event) => withButton(event.currentTarget, async () => {
+      await run('/api/admin/tutorial-start');
+    }));
+
+    $('tutorialNextBtn').addEventListener('click', (event) => withButton(event.currentTarget, async () => {
+      await run('/api/admin/tutorial-next');
+    }));
+
+    $('tutorialPrevBtn').addEventListener('click', (event) => withButton(event.currentTarget, async () => {
+      await run('/api/admin/tutorial-prev');
+    }));
+
+    $('tutorialResetBtn').addEventListener('click', (event) => withButton(event.currentTarget, async () => {
+      await run('/api/admin/tutorial-reset');
+    }));
+
+    $('tutorialCloseBtn').addEventListener('click', (event) => withButton(event.currentTarget, async () => {
+      await run('/api/admin/tutorial-close');
     }));
 
     const addTeamBtn = $('addTeamBtn');

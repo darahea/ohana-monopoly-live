@@ -547,7 +547,9 @@ function resetGameState(teamCount) {
   const count = Number.isFinite(Number(teamCount))
     ? Math.max(MIN_TEAMS, Math.min(MAX_TEAMS, Number(teamCount)))
     : state.teams.length;
+  const prevSettings = { ...state.settings };
   state = createInitialState(count);
+  state.settings = prevSettings;
   addLog(`게임이 리셋되었습니다. ${count}개 팀이 START에서 각 20포인트로 시작합니다.`, 'system');
 }
 
@@ -671,6 +673,34 @@ app.post('/api/admin/clear-mini-game', (_req, res) => mutate(res, () => {
 app.post('/api/admin/clear-spotlight', (_req, res) => mutate(res, () => {
   state.game.spotlight = null;
   addLog('스포트라이트가 제거되었습니다.', 'system');
+}));
+
+const TUTORIAL_SLIDE_COUNT = 8;
+
+app.post('/api/admin/tutorial-start', (_req, res) => mutate(res, () => {
+  state.game.tutorial = { slide: 0 };
+}));
+
+app.post('/api/admin/tutorial-next', (_req, res) => mutate(res, () => {
+  if (!state.game.tutorial) {
+    state.game.tutorial = { slide: 0 };
+  } else {
+    state.game.tutorial.slide = Math.min(state.game.tutorial.slide + 1, TUTORIAL_SLIDE_COUNT - 1);
+  }
+}));
+
+app.post('/api/admin/tutorial-prev', (_req, res) => mutate(res, () => {
+  if (state.game.tutorial) {
+    state.game.tutorial.slide = Math.max(state.game.tutorial.slide - 1, 0);
+  }
+}));
+
+app.post('/api/admin/tutorial-reset', (_req, res) => mutate(res, () => {
+  state.game.tutorial = { slide: 0 };
+}));
+
+app.post('/api/admin/tutorial-close', (_req, res) => mutate(res, () => {
+  state.game.tutorial = null;
 }));
 
 app.post('/api/admin/adjust-points', (req, res) => mutate(res, () => {

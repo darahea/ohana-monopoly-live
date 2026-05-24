@@ -7,10 +7,13 @@
     teamById,
     spaceByIndex,
     renderBoard,
+    renderTutorialOverlay,
     formatPosition,
     showToast,
     gameStatusLabel
   } = window.Ohana;
+
+  let prevStatus = null;
 
   function render(gameState) {
     const isActive = gameState.game.status === 'active';
@@ -18,6 +21,62 @@
     renderCurrentTurnCard(gameState, activeTeam);
     renderRanking(gameState, activeTeam);
     renderBoard({ gameState, layerId: 'tilesLayer', centerId: 'centerSpotlight' });
+    renderTutorialOverlay(gameState);
+
+    if (prevStatus && prevStatus !== 'active' && gameState.game.status === 'active') {
+      showGameStartOverlay();
+    }
+    if (prevStatus && prevStatus !== 'ended' && gameState.game.status === 'ended') {
+      showGameEndOverlay();
+    }
+    prevStatus = gameState.game.status;
+  }
+
+  function showGameStartOverlay() {
+    const overlay = $('gameStartOverlay');
+    if (!overlay) return;
+    overlay.querySelector('.game-start-title').textContent = 'Game Start!';
+    overlay.classList.remove('hidden');
+    overlay.style.animation = 'none';
+    overlay.offsetHeight;
+    overlay.style.animation = '';
+    setTimeout(() => overlay.classList.add('hidden'), 3000);
+  }
+
+  function showGameEndOverlay() {
+    const overlay = $('gameStartOverlay');
+    if (!overlay) return;
+    overlay.querySelector('.game-start-title').textContent = 'Game Over!';
+    overlay.classList.remove('hidden');
+    overlay.style.animation = 'none';
+    overlay.offsetHeight;
+    overlay.style.animation = '';
+    setTimeout(() => {
+      overlay.classList.add('hidden');
+      launchConfetti();
+    }, 3000);
+  }
+
+  function launchConfetti() {
+    const container = $('confettiContainer');
+    if (!container) return;
+    container.classList.remove('hidden');
+    container.innerHTML = '';
+    const colors = ['#0176d3', '#ff5d2d', '#ffab00', '#2e844a', '#ea001e', '#9050e9'];
+    for (let i = 0; i < 120; i++) {
+      const piece = document.createElement('div');
+      piece.className = 'confetti-piece';
+      piece.style.setProperty('--x', `${Math.random() * 100}vw`);
+      piece.style.setProperty('--r', `${Math.random() * 720 - 360}deg`);
+      piece.style.setProperty('--d', `${Math.random() * 2 + 2}s`);
+      piece.style.setProperty('--delay', `${Math.random() * 1.5}s`);
+      piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+      container.appendChild(piece);
+    }
+    setTimeout(() => {
+      container.classList.add('hidden');
+      container.innerHTML = '';
+    }, 5000);
   }
 
   function ordinal(n) {
