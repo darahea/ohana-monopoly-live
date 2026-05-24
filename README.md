@@ -40,7 +40,7 @@ npm run dev
 - When a team completes all rounds, it is removed from the board and marked as "Done" on the leaderboard.
 - Completed teams are skipped in turn order.
 - The game ends automatically when all teams finish their rounds or time runs out.
-- Turn order rotates each round to mitigate first-mover advantage.
+- Turn order is fixed: Team 1 → 2 → 3 → ... → last team, repeating each round.
 
 ### Seoul Special Rule
 
