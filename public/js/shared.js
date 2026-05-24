@@ -252,24 +252,23 @@ window.Ohana = (() => {
     if (gameState.game?.status === 'ended') {
       const sorted = [...(gameState.teams || [])].sort((a, b) => b.points - a.points);
       const winner = sorted[0];
-      const podium = sorted.slice(0, 3);
-      const board = gameState.board || [];
-      const statsRows = sorted.map(t => {
-        const towers = board.filter(space => space.type === 'city' && space.ownerTeamId === t.id).length;
-        return `<div class="game-end-stats-row"><span class="fee-team-chip" style="--team-color:${escapeHtml(t.color || '#0176d3')}">${escapeHtml(t.name)}</span><span class="game-end-stats-towers">${towers} towers</span><span class="game-end-stats-pts">${t.points}pts</span></div>`;
+      const maxPts = Math.max(sorted[0]?.points || 1, 1);
+      const minPts = Math.min(...sorted.map((t) => t.points));
+      const range = maxPts - Math.min(minPts, 0) || 1;
+      const maxBarPx = 240;
+      const minBarPx = 120;
+      const statsRows = sorted.map((t, i) => {
+        const isTop3 = i < 3;
+        const trophy = i === 0 ? '<span class="stats-trophy">🏆</span>' : '<span class="stats-trophy"></span>';
+        const barPx = Math.max(minBarPx, Math.round(((t.points - Math.min(minPts, 0)) / range) * maxBarPx));
+        return `<div class="game-end-stats-row ${isTop3 ? 'stats-row-top' : 'stats-row-rest'}">
+          ${trophy}<span class="fee-team-chip stats-bar" style="--team-color:${escapeHtml(t.color || '#0176d3')};width:${barPx}px">${escapeHtml(t.name)}</span>
+          <span class="game-end-stats-pts">${t.points}pts</span>
+        </div>`;
       }).join('');
       center.innerHTML = `<div class="center-ended">
         <h2 class="game-end-title">Game Complete</h2>
-        <div class="game-end-winner" style="--team-color:${escapeHtml(winner?.color || '#0176d3')}">
-          <span class="game-end-trophy">🏆</span>
-          <span class="game-end-winner-name">${escapeHtml(winner?.name || 'Team')}</span>
-          <span class="game-end-winner-pts">${winner?.points || 0}pts</span>
-        </div>
-        <div class="game-end-podium">
-          ${podium.map((t, i) => `<div class="podium-entry"><span class="podium-rank">${i + 1}${i === 0 ? 'st' : i === 1 ? 'nd' : 'rd'}</span><span class="podium-name" style="--team-color:${escapeHtml(t.color)}">${escapeHtml(t.name)}</span><span class="podium-pts">${t.points}pts</span></div>`).join('')}
-        </div>
         <div class="game-end-stats">
-          <div class="game-end-stats-header">Team Summary</div>
           ${statsRows}
         </div>
       </div>`;

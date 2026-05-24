@@ -1419,86 +1419,53 @@ a { color: inherit; }
 .game-end-title {
   font-family: var(--font-en);
   font-size: 44px;
-  margin: 0 0 20px;
+  margin: 0 0 24px;
   letter-spacing: -0.02em;
 }
-.game-end-winner {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  background: rgba(255,255,255,0.15);
-  border: 3px solid var(--team-color);
-  border-radius: 16px;
-  padding: 16px 24px;
-  margin-bottom: 20px;
-}
-.game-end-trophy { font-size: 40px; }
-.game-end-winner-name {
-  font-family: var(--font-en);
-  font-size: 32px;
-  font-weight: 800;
-}
-.game-end-winner-pts {
-  font-size: 24px;
-  opacity: 0.9;
-  margin-left: auto;
-}
-.game-end-podium {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  width: 100%;
-  max-width: 320px;
-}
-.podium-entry {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 18px;
-}
-.podium-rank {
-  font-weight: 700;
-  width: 36px;
-}
-.podium-name {
-  font-weight: 600;
-  color: var(--team-color);
-}
-.podium-pts {
-  margin-left: auto;
-  opacity: 0.85;
-}
 .game-end-stats {
-  margin-top: 18px;
   width: 100%;
-  max-width: 360px;
+  max-width: 420px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
-}
-.game-end-stats-header {
-  font-size: 14px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: .05em;
-  opacity: 0.7;
-  margin-bottom: 4px;
+  gap: 10px;
 }
 .game-end-stats-row {
-  display: flex;
+  display: grid;
+  grid-template-columns: 40px 1fr auto;
   align-items: center;
-  gap: 10px;
-  font-size: 15px;
+  gap: 8px;
 }
-.game-end-stats-towers {
-  margin-left: auto;
-  opacity: 0.85;
-  font-size: 14px;
+.stats-row-top {
+  font-size: 28px;
+  padding: 10px 0;
+}
+.game-end-stats-row .fee-team-chip {
+  font-size: 24px;
+}
+.stats-row-rest {
+  font-size: 16px;
+  opacity: 0.7;
+  padding: 4px 0;
+}
+.stats-trophy {
+  font-size: 32px;
+  text-align: center;
+}
+.stats-bar {
+  transition: width 0.6s ease;
+  white-space: nowrap;
+  min-width: 120px;
 }
 .game-end-stats-pts {
-  font-weight: 700;
-  min-width: 56px;
+  font-weight: 800;
+  font-family: var(--font-en);
   text-align: right;
+}
+.stats-row-top .game-end-stats-pts {
+  font-size: 32px;
+}
+.stats-row-rest .game-end-stats-pts {
+  font-size: 18px;
 }
 .center-title { display: flex; flex-direction: column; align-items: center; gap: 4px; }
 .center-title .script { font-family: var(--font-en); font-size: 22px; font-style: italic; opacity: .85; }
