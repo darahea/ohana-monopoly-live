@@ -14,6 +14,8 @@
   } = window.Ohana;
 
   let prevStatus = null;
+  let prevSpotlight = null;
+  let prevBoardOwners = null;
 
   function render(gameState) {
     const isActive = gameState.game.status === 'active';
@@ -29,7 +31,33 @@
     if (prevStatus && prevStatus !== 'ended' && gameState.game.status === 'ended') {
       showGameEndOverlay();
     }
+
+    const spotlight = gameState.game?.spotlight;
+    const spotlightKey = spotlight ? `${spotlight.type}-${spotlight.at}` : null;
+    const prevKey = prevSpotlight ? `${prevSpotlight.type}-${prevSpotlight.at}` : null;
+    if (spotlight && spotlightKey !== prevKey) {
+      if (spotlight.type === 'fee_warning') {
+        showDramaticFlash('danger');
+      } else if (spotlight.type === 'mini') {
+        showAnnounceBanner('MINI GAME!', 'mini');
+      } else if (spotlight.type === 'start') {
+        showFloatingPoints(`+${gameState.settings.passStartPoints}pts`);
+      }
+    }
+
+    const currentOwners = gameState.board.map((s) => s.ownerTeamId || null);
+    if (prevBoardOwners) {
+      for (let i = 0; i < currentOwners.length; i++) {
+        if (!prevBoardOwners[i] && currentOwners[i]) {
+          launchMiniConfetti();
+          break;
+        }
+      }
+    }
+    prevBoardOwners = currentOwners;
+
     prevStatus = gameState.game.status;
+    prevSpotlight = spotlight;
   }
 
   function showGameStartOverlay() {
@@ -54,6 +82,51 @@
     setTimeout(() => {
       overlay.classList.add('hidden');
       launchConfetti();
+    }, 3000);
+  }
+
+  function showDramaticFlash(type) {
+    const el = document.createElement('div');
+    el.className = `dramatic-flash dramatic-flash-${type}`;
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 600);
+  }
+
+  function showAnnounceBanner(text, type) {
+    const el = document.createElement('div');
+    el.className = `announce-banner announce-banner-${type}`;
+    el.textContent = text;
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 2000);
+  }
+
+  function showFloatingPoints(text) {
+    const el = document.createElement('div');
+    el.className = 'floating-points';
+    el.textContent = text;
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 2000);
+  }
+
+  function launchMiniConfetti() {
+    const container = $('confettiContainer');
+    if (!container) return;
+    container.classList.remove('hidden');
+    container.innerHTML = '';
+    const colors = ['#0176d3', '#ffab00', '#2e844a', '#9050e9'];
+    for (let i = 0; i < 40; i++) {
+      const piece = document.createElement('div');
+      piece.className = 'confetti-piece';
+      piece.style.setProperty('--x', `${30 + Math.random() * 40}vw`);
+      piece.style.setProperty('--r', `${Math.random() * 720 - 360}deg`);
+      piece.style.setProperty('--d', `${Math.random() * 1.5 + 1.5}s`);
+      piece.style.setProperty('--delay', `${Math.random() * 0.5}s`);
+      piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+      container.appendChild(piece);
+    }
+    setTimeout(() => {
+      container.classList.add('hidden');
+      container.innerHTML = '';
     }, 3000);
   }
 

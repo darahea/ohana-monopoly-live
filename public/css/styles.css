@@ -1131,6 +1131,70 @@ a { color: inherit; }
   opacity: 0.9;
 }
 .center-default { background: linear-gradient(165deg, #032d60 0%, #0176d3 100%); color: #fff; }
+/* Dramatic flash (toll fee) */
+.dramatic-flash {
+  position: fixed;
+  inset: 0;
+  z-index: 9997;
+  pointer-events: none;
+  animation: flashPulse 0.6s ease-out forwards;
+}
+.dramatic-flash-danger {
+  background: radial-gradient(ellipse at center, rgba(234, 0, 30, 0.4) 0%, transparent 70%);
+}
+@keyframes flashPulse {
+  0% { opacity: 0; }
+  20% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* Announce banner (mini game) */
+.announce-banner {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.5);
+  z-index: 10001;
+  font-size: 96px;
+  font-weight: 700;
+  font-family: var(--font-en);
+  pointer-events: none;
+  text-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+  animation: bannerPop 2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+.announce-banner-mini {
+  color: #ffab00;
+}
+@keyframes bannerPop {
+  0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
+  15% { transform: translate(-50%, -50%) scale(1.1); opacity: 1; }
+  30% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+  75% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+  100% { transform: translate(-50%, -50%) scale(1.2); opacity: 0; }
+}
+
+/* Floating points (START pass) */
+.floating-points {
+  position: fixed;
+  top: 45%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10001;
+  font-size: 72px;
+  font-weight: 700;
+  font-family: var(--font-en);
+  color: #2e844a;
+  pointer-events: none;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+  animation: floatUp 2s ease-out forwards;
+}
+@keyframes floatUp {
+  0% { opacity: 0; transform: translateX(-50%) translateY(0) scale(0.8); }
+  20% { opacity: 1; transform: translateX(-50%) translateY(-20px) scale(1); }
+  70% { opacity: 1; transform: translateX(-50%) translateY(-60px) scale(1); }
+  100% { opacity: 0; transform: translateX(-50%) translateY(-100px) scale(0.9); }
+}
+
 .confetti-container {
   position: fixed;
   inset: 0;
