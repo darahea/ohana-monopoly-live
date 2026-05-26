@@ -21,11 +21,11 @@ const TEAM_PALETTE = [
   '#FF6900', // 1 Vivid Orange
   '#2E844A', // 2 Green
   '#7F4ACB', // 3 Purple
-  '#1B2A6B', // 4 Dark Navy
+  '#FF80AB', // 4 Light Pink
   '#EA001E', // 5 Red
-  '#FFCC00', // 6 Bright Yellow
+  '#F5B800', // 6 Golden Yellow
   '#00BCD4', // 7 Cyan
-  '#E91E63', // 8 Pink
+  '#1B2A6B', // 8 Dark Navy
   '#8BC34A', // 9 Lime
   '#795548'  // 10 Brown
 ];
@@ -46,26 +46,26 @@ const DEFAULT_TEAM_COUNT = 6;
 const DEFAULT_BOARD = [
   { id: 'start', type: 'start', name: 'START', label: 'START' },                                                                                                                                       // 0
   // 🔴 HIGH right at start (HQ) — unreachable from START with 2 dice
-  { id: 'san-francisco', type: 'city', name: 'San Francisco', label: 'San Francisco', subtitle: '샌프란시스코, 미국', tier: 'high', tag: 'HQ', cost: 10, fee: 20, image: '/assets/cities/san-francisco.webp' },  // 1
-  { id: 'singapore', type: 'city', name: 'Singapore', label: 'Singapore', subtitle: '싱가포르', tier: 'low', cost: 4, fee: 8, image: '/assets/cities/singapore.webp' },                                  // 2
+  { id: 'san-francisco', type: 'city', name: 'San Francisco', label: 'San Francisco', subtitle: '샌프란시스코, 미국', tier: 'high', tag: 'HQ', cost: 10, fee: 8, image: '/assets/cities/san-francisco.webp' },  // 1
+  { id: 'singapore', type: 'city', name: 'Singapore', label: 'Singapore', subtitle: '싱가포르', tier: 'low', cost: 4, fee: 3, image: '/assets/cities/singapore.webp' },                                  // 2
   { id: 'mini-1', type: 'mini', name: 'Mini Game', label: 'Mini Game' },                                                                                                                                // 3
-  { id: 'london', type: 'city', name: 'London', label: 'London', subtitle: '런던, 영국', tier: 'mid', tag: 'Tower', cost: 6, fee: 12, image: '/assets/cities/london.webp' },                            // 4
-  { id: 'empty-1', type: 'empty', name: 'Coming Soon', label: '도시 추가 예정' },                                                                                                                       // 5 corner
-  { id: 'paris', type: 'city', name: 'Paris', label: 'Paris', subtitle: '파리, 프랑스', tier: 'low', cost: 4, fee: 8, image: '/assets/cities/paris.webp' },                                            // 6
-  { id: 'sydney', type: 'city', name: 'Sydney', label: 'Sydney', subtitle: '시드니, 호주', tier: 'mid', tag: 'Tower', cost: 6, fee: 12, image: '/assets/cities/sydney.webp' },                          // 7
+  { id: 'london', type: 'city', name: 'London', label: 'London', subtitle: '런던, 영국', tier: 'mid', tag: 'Tower', cost: 6, fee: 5, image: '/assets/cities/london.webp' },                            // 4
+  { id: 'dubai', type: 'city', name: 'Dubai', label: 'Dubai', subtitle: '두바이, 아랍에미리트', tier: 'mid', cost: 6, fee: 5, image: '/assets/cities/dubai.webp' },                                    // 5 corner
+  { id: 'paris', type: 'city', name: 'Paris', label: 'Paris', subtitle: '파리, 프랑스', tier: 'low', cost: 4, fee: 3, image: '/assets/cities/paris.webp' },                                            // 6
+  { id: 'sydney', type: 'city', name: 'Sydney', label: 'Sydney', subtitle: '시드니, 호주', tier: 'mid', tag: 'Tower', cost: 6, fee: 5, image: '/assets/cities/sydney.webp' },                          // 7
   { id: 'mini-2', type: 'mini', name: 'Mini Game', label: 'Mini Game' },                                                                                                                                // 8
-  { id: 'barcelona', type: 'city', name: 'Barcelona', label: 'Barcelona', subtitle: '바르셀로나, 스페인', tier: 'low', cost: 4, fee: 8, image: '/assets/cities/barcelona.webp' },                       // 9
-  { id: 'taipei', type: 'city', name: 'Taipei', label: 'Taipei', subtitle: '타이페이, 대만', tier: 'mid', cost: 6, fee: 12, image: '/assets/cities/taipei.webp' },                                      // 10 corner
-  { id: 'toronto', type: 'city', name: 'Toronto', label: 'Toronto', subtitle: '토론토, 캐나다', tier: 'low', cost: 4, fee: 8, image: '/assets/cities/toronto.webp' },                                   // 11
-  { id: 'new-york', type: 'city', name: 'New York', label: 'New York', subtitle: '뉴욕, 미국', tier: 'mid', tag: 'Tower', cost: 6, fee: 12, image: '/assets/cities/new-york.webp' },                  // 12
-  { id: 'empty-2', type: 'empty', name: 'Coming Soon', label: '도시 추가 예정' },                                                                                                                       // 13
+  { id: 'barcelona', type: 'city', name: 'Barcelona', label: 'Barcelona', subtitle: '바르셀로나, 스페인', tier: 'low', cost: 4, fee: 3, image: '/assets/cities/barcelona.webp' },                       // 9
+  { id: 'taipei', type: 'city', name: 'Taipei', label: 'Taipei', subtitle: '타이페이, 대만', tier: 'mid', cost: 6, fee: 5, image: '/assets/cities/taipei.webp' },                                      // 10 corner
+  { id: 'toronto', type: 'city', name: 'Toronto', label: 'Toronto', subtitle: '토론토, 캐나다', tier: 'low', cost: 4, fee: 3, image: '/assets/cities/toronto.webp' },                                   // 11
+  { id: 'new-york', type: 'city', name: 'New York', label: 'New York', subtitle: '뉴욕, 미국', tier: 'mid', tag: 'Tower', cost: 6, fee: 5, image: '/assets/cities/new-york.webp' },                  // 12
+  { id: 'berlin', type: 'city', name: 'Berlin', label: 'Berlin', subtitle: '베를린, 독일', tier: 'low', cost: 4, fee: 3, image: '/assets/cities/berlin.webp' },                                         // 13
   { id: 'mini-3', type: 'mini', name: 'Mini Game', label: 'Mini Game' },                                                                                                                                // 14
-  { id: 'chicago', type: 'city', name: 'Chicago', label: 'Chicago', subtitle: '시카고, 미국', tier: 'low', cost: 4, fee: 8, image: '/assets/cities/chicago.webp' },                                     // 15 corner
+  { id: 'chicago', type: 'city', name: 'Chicago', label: 'Chicago', subtitle: '시카고, 미국', tier: 'low', cost: 4, fee: 3, image: '/assets/cities/chicago.webp' },                                     // 15 corner
   // 🔴 HIGH gauntlet at end
-  { id: 'tokyo', type: 'city', name: 'Tokyo', label: 'Tokyo', subtitle: '도쿄, 일본', tier: 'high', tag: 'Tower', cost: 10, fee: 20, image: '/assets/cities/tokyo.webp' },                              // 16
-  { id: 'empty-3', type: 'empty', name: 'Coming Soon', label: '도시 추가 예정' },                                                                                                                       // 17
+  { id: 'tokyo', type: 'city', name: 'Tokyo', label: 'Tokyo', subtitle: '도쿄, 일본', tier: 'high', tag: 'Tower', cost: 10, fee: 8, image: '/assets/cities/tokyo.webp' },                              // 16
+  { id: 'dublin', type: 'city', name: 'Dublin', label: 'Dublin', subtitle: '더블린, 아일랜드', tier: 'high', cost: 10, fee: 8, image: '/assets/cities/dublin.webp' },                                  // 17
   { id: 'mini-4', type: 'mini', name: 'Mini Game', label: 'Mini Game' },                                                                                                                                // 18
-  { id: 'seoul', type: 'city', name: 'Seoul', label: 'Seoul', subtitle: '서울, 대한민국', tier: 'high', tag: 'Hometown', cost: 10, fee: 20, image: '/assets/cities/seoul.webp' }                        // 19
+  { id: 'seoul', type: 'city', name: 'Seoul', label: 'Seoul', subtitle: '서울, 대한민국', tier: 'high', tag: 'Hometown', cost: 10, fee: 8, upgradeCost: 5, upgradedFee: 20, image: '/assets/cities/seoul.webp' }  // 19
 ];
 
 const app = express();
@@ -87,7 +87,7 @@ function makeInitialTeams(count) {
   const n = Math.max(MIN_TEAMS, Math.min(MAX_TEAMS, Number(count) || DEFAULT_TEAM_COUNT));
   return Array.from({ length: n }, (_, index) => ({
     ...defaultTeamAt(index),
-    points: 20,
+    points: 5,
     position: 0,
     previousPosition: 0
   }));
@@ -95,14 +95,14 @@ function makeInitialTeams(count) {
 
 function createInitialState(teamCount = DEFAULT_TEAM_COUNT) {
   const teams = makeInitialTeams(teamCount);
-  const board = DEFAULT_BOARD.map((space, index) => ({ ...space, index, ownerTeamId: null }));
+  const board = DEFAULT_BOARD.map((space, index) => ({ ...space, index, ownerTeamId: null, upgraded: false }));
   return {
     version: STATE_VERSION,
     title: 'Ohana Monopoly',
     createdAt: now(),
     updatedAt: now(),
-    settings: { startPoints: 20, passStartPoints: 5, miniGameAwards: [20, 10, 5], moveStepMs: MOVE_STEP_MS },
-    game: { status: 'ready', round: 1, currentTurnIndex: 0, turnsPlayed: 0, lastDice: null, lastLanding: null, spotlight: null, activeMiniGame: null, moving: null, startedAt: null, endedAt: null },
+    settings: { startPoints: 5, passStartPoints: 5, miniGameAwards: [20, 10, 5], moveStepMs: MOVE_STEP_MS, maxRounds: 3, gameDurationMinutes: 110 },
+    game: { status: 'ready', round: 1, currentTurnIndex: 0, turnsPlayed: 0, lastDice: null, lastLanding: null, spotlight: null, activeMiniGame: null, moving: null, startedAt: null, endedAt: null, laps: {}, timer: null },
     teams,
     board,
     pendingFees: [],
@@ -114,7 +114,14 @@ function normalizeLoadedBoard(board) {
   if (!Array.isArray(board) || board.length !== DEFAULT_BOARD.length) {
     return DEFAULT_BOARD.map((space, index) => ({ ...space, index, ownerTeamId: null }));
   }
-  return board.map((space, index) => ({ ...DEFAULT_BOARD[index], ownerTeamId: space.ownerTeamId || null, index }));
+  return board.map((space, index) => {
+    const base = { ...DEFAULT_BOARD[index], ownerTeamId: space.ownerTeamId || null, index };
+    if (space.upgraded) {
+      base.upgraded = true;
+      base.fee = DEFAULT_BOARD[index].upgradedFee || base.fee;
+    }
+    return base;
+  });
 }
 
 function normalizeLoadedTeams(teams) {
@@ -219,20 +226,15 @@ function emitAndSave() {
   broadcast();
 }
 
-// Team rotation: each round starts with a different team to mitigate first-mover advantage.
-// turnsPlayed counts total turns since game start (0-indexed). For team count n:
-//   round = floor(turnsPlayed / n) + 1
-//   currentTurnIndex = (turnsPlayed + floor(turnsPlayed / n)) % n
-// This yields:
-//   Round 1: 0, 1, 2, ..., n-1
-//   Round 2: 1, 2, 3, ..., n-1, 0
-//   Round 3: 2, 3, ..., n-1, 0, 1
-//   ...
 function applyTurnFromCounter() {
   const n = state.teams.length;
   const T = state.game.turnsPlayed;
-  state.game.currentTurnIndex = ((T % n) + Math.floor(T / n)) % n;
+  state.game.currentTurnIndex = T % n;
   state.game.round = Math.floor(T / n) + 1;
+}
+
+function isTeamFinished(teamId) {
+  return Array.isArray(state.game.finished) && state.game.finished.includes(teamId);
 }
 
 function advanceTurn({ clearSpotlight = true, force = false } = {}) {
@@ -240,8 +242,12 @@ function advanceTurn({ clearSpotlight = true, force = false } = {}) {
   if (!force && state.game.activeMiniGame) throw bad('진행 중인 미니게임을 먼저 처리해 주세요.');
   cancelAutoAdvance();
   const oldTeam = currentTeam();
-  state.game.turnsPlayed = (state.game.turnsPlayed || 0) + 1;
-  applyTurnFromCounter();
+  let attempts = 0;
+  do {
+    state.game.turnsPlayed = (state.game.turnsPlayed || 0) + 1;
+    applyTurnFromCounter();
+    attempts++;
+  } while (isTeamFinished(currentTeam().id) && attempts < state.teams.length);
   state.game.lastDice = null;
   state.game.lastLanding = null;
   state.game.activeMiniGame = force ? null : state.game.activeMiniGame;
@@ -282,8 +288,14 @@ function setLandingSpotlight(team, landing, newPosition) {
       state.game.spotlight = { type: 'city', spaceIndex: newPosition, teamId: team.id, at: now() };
       addLog(`${team.name}이(가) ${landing.label}에 착지했습니다. ${landing.cost}포인트로 타워를 구매할 수 있습니다.`, 'city');
     } else if (landing.ownerTeamId === team.id) {
-      state.game.spotlight = { type: 'city', spaceIndex: newPosition, teamId: team.id, at: now() };
-      addLog(`${team.name}이(가) 자신의 타워가 있는 ${landing.label}에 착지했습니다.`, 'city');
+      if (landing.id === 'seoul' && landing.upgradeCost && !landing.upgraded) {
+        const canAfford = team.points >= landing.upgradeCost;
+        state.game.spotlight = { type: 'seoul_upgrade', spaceIndex: newPosition, teamId: team.id, canAfford, upgradeCost: landing.upgradeCost, upgradedFee: landing.upgradedFee, at: now() };
+        addLog(`${team.name}이(가) 서울에 착지했습니다. Salesforce Tower를 건설할 수 있습니다.`, 'city');
+      } else {
+        state.game.spotlight = { type: 'city', spaceIndex: newPosition, teamId: team.id, at: now() };
+        addLog(`${team.name}이(가) 자신의 도시 ${landing.label}에 착지했습니다.`, 'city');
+      }
     } else {
       const owner = getTeam(landing.ownerTeamId);
       addLog(`${team.name}이(가) ${owner?.name || '다른 팀'} 소유의 ${landing.label}에 착지했습니다.`, 'city');
@@ -310,7 +322,9 @@ function setLandingSpotlight(team, landing, newPosition) {
   }
 
   if (landing.type === 'start') {
-    state.game.spotlight = null;
+    if (!state.game.spotlight || state.game.spotlight.type !== 'start') {
+      state.game.spotlight = { type: 'start', teamId: team.id, at: now() };
+    }
     addLog(`${team.name}이(가) START에 착지했습니다.`, 'start');
   }
 
@@ -380,7 +394,44 @@ async function moveActiveTeamAnimated(dice1, dice2) {
       state.game.moving = { teamId: team.id, from: oldPosition, current: index, step, total, path, at: now() };
       if (index === 0) {
         team.points += state.settings.passStartPoints;
+        if (!state.game.laps) state.game.laps = {};
+        state.game.laps[team.id] = (state.game.laps[team.id] || 0) + 1;
         addLog(`${team.name}이(가) START를 지나며 ${state.settings.passStartPoints}포인트를 획득했습니다.`, 'start');
+
+        const maxR = state.settings.maxRounds;
+        if (maxR && state.game.laps[team.id] >= maxR) {
+          if (!state.game.finished) state.game.finished = [];
+          if (!state.game.finished.includes(team.id)) state.game.finished.push(team.id);
+          team.position = -1;
+          state.game.moving = null;
+          state.game.spotlight = { type: 'team_finished', teamId: team.id, at: now() };
+          addLog(`${team.name}이(가) 모든 라운드를 완료했습니다!`, 'system');
+          emitAndSave();
+          await delay(3000);
+          state.game.spotlight = null;
+          emitAndSave();
+
+          const allDone = state.teams.every((t) => (state.game.laps[t.id] || 0) >= maxR);
+          if (allDone) {
+            state.game.status = 'ended';
+            state.game.endedAt = now();
+            state.game.activeMiniGame = null;
+            state.game.spotlight = null;
+            addLog(`모든 팀이 ${maxR}바퀴를 완료하여 게임이 자동 종료되었습니다.`, 'system');
+            emitAndSave();
+          } else {
+            advanceTurn({ clearSpotlight: true, force: true });
+            emitAndSave();
+          }
+          return;
+        }
+
+        state.game.spotlight = { type: 'start', teamId: team.id, at: now() };
+        emitAndSave();
+        await delay(2000);
+        if (step < total) {
+          state.game.spotlight = null;
+        }
       }
       emitAndSave();
       await delay(MOVE_STEP_MS);
@@ -442,6 +493,7 @@ function scheduleAutoAdvanceIfNeeded(landing) {
     if (!landing.ownerTeamId) return; // empty city, await buy
     const team = currentTeam();
     if (landing.ownerTeamId === team.id) {
+      if (landing.id === 'seoul' && landing.upgradeCost && !landing.upgraded) return;
       scheduleAutoAdvance(3000, 'own_city');
     } else {
       scheduleAutoAdvance(4500, 'fee_paid');
@@ -469,8 +521,38 @@ function buildCurrentTower() {
   team.points -= space.cost;
   space.ownerTeamId = team.id;
   addLog(`${team.name}이(가) ${space.label}에 ${space.cost}포인트로 타워를 건설했습니다.`, 'tower');
-  // Auto-advance after build (3 sec to see the result)
-  scheduleAutoAdvance(3500, 'tower_built');
+  if (space.id === 'seoul' && space.upgradeCost && !space.upgraded) {
+    const canAfford = team.points >= space.upgradeCost;
+    state.game.spotlight = { type: 'seoul_upgrade', spaceIndex: space.index, teamId: team.id, canAfford, upgradeCost: space.upgradeCost, upgradedFee: space.upgradedFee, at: now() };
+  } else {
+    scheduleAutoAdvance(3500, 'tower_built');
+  }
+}
+
+function upgradeSeoulTower() {
+  if (state.game.status !== 'active') throw bad('게임을 시작한 후 업그레이드할 수 있습니다.');
+  if (state.game.moving) throw bad('이동이 끝난 후 다시 시도해 주세요.');
+  const team = currentTeam();
+  const space = state.board.find((s) => s.id === 'seoul');
+  if (!space) throw bad('서울 도시를 찾을 수 없습니다.');
+  if (space.ownerTeamId !== team.id) throw bad('서울을 소유한 팀만 업그레이드할 수 있습니다.');
+  if (space.upgraded) throw bad('서울 타워는 이미 업그레이드되었습니다.');
+  const cost = space.upgradeCost || 5;
+  if (team.points < cost) throw bad(`업그레이드에 ${cost}포인트가 필요합니다.`);
+  team.points -= cost;
+  space.upgraded = true;
+  space.fee = space.upgradedFee || 20;
+  addLog(`${team.name}이(가) 서울에 Salesforce Tower를 건설했습니다! 통행료 ${space.fee}pts`, 'tower');
+  scheduleAutoAdvance(4000, 'seoul_upgraded');
+}
+
+function skipSeoulUpgrade() {
+  if (state.game.status !== 'active') throw bad('게임이 진행 중이 아닙니다.');
+  const space = state.board.find((s) => s.id === 'seoul');
+  if (!space) throw bad('서울 도시를 찾을 수 없습니다.');
+  state.game.spotlight = null;
+  addLog(`${currentTeam().name}이(가) 서울 Salesforce Tower 건설을 건너뛰었습니다.`, 'tower');
+  scheduleAutoAdvance(2000, 'seoul_skip');
 }
 
 function sellTowerForActiveTeam(cityIndex) {
@@ -484,6 +566,7 @@ function sellTowerForActiveTeam(cityIndex) {
   const refund = Math.floor(Number(space.cost || 0) / 2);
   space.ownerTeamId = null;
   team.points += refund;
+  state.game.spotlight = { type: 'tower_sold', teamId: team.id, spaceIndex: index, cityLabel: space.label, refund, at: now() };
   addLog(`${team.name}이(가) ${space.label} 타워를 ${refund}포인트에 판매했습니다.`, 'tower');
 }
 
@@ -500,7 +583,9 @@ function resetGameState(teamCount) {
   const count = Number.isFinite(Number(teamCount))
     ? Math.max(MIN_TEAMS, Math.min(MAX_TEAMS, Number(teamCount)))
     : state.teams.length;
+  const prevSettings = { ...state.settings };
   state = createInitialState(count);
+  state.settings = prevSettings;
   addLog(`게임이 리셋되었습니다. ${count}개 팀이 START에서 각 20포인트로 시작합니다.`, 'system');
 }
 
@@ -508,7 +593,7 @@ function addTeam() {
   if (state.game.status === 'active') throw bad('게임이 진행 중일 때는 팀을 추가할 수 없습니다.');
   if (state.teams.length >= MAX_TEAMS) throw bad(`최대 ${MAX_TEAMS}개 팀까지만 추가할 수 있습니다.`);
   const index = state.teams.length;
-  const newTeam = { ...defaultTeamAt(index), points: 20, position: 0, previousPosition: 0 };
+  const newTeam = { ...defaultTeamAt(index), points: 5, position: 0, previousPosition: 0 };
   while (state.teams.some((t) => t.id === newTeam.id)) {
     newTeam.id = `${newTeam.id}-${crypto.randomUUID().slice(0, 4)}`;
   }
@@ -533,12 +618,29 @@ function removeTeam(teamId) {
 app.get('/admin', (_req, res) => res.sendFile(path.join(PUBLIC_DIR, 'admin.html')));
 app.get('/api/state', (_req, res) => ok(res, { state: visibleState() }));
 
+app.post('/api/admin/set-max-rounds', (req, res) => mutate(res, () => {
+  const rounds = Number(req.body.maxRounds);
+  if (!Number.isInteger(rounds) || rounds < 1 || rounds > 10) throw bad('라운드 수는 1~10 사이의 정수여야 합니다.');
+  state.settings.maxRounds = rounds;
+  addLog(`총 라운드가 ${rounds}로 설정되었습니다.`, 'system');
+}));
+
+app.post('/api/admin/set-game-duration', (req, res) => mutate(res, () => {
+  const minutes = Number(req.body.minutes);
+  if (!Number.isInteger(minutes) || minutes < 1 || minutes > 180) throw bad('게임 시간은 1~180분 사이의 정수여야 합니다.');
+  state.settings.gameDurationMinutes = minutes;
+  addLog(`게임 제한시간이 ${minutes}분으로 설정되었습니다.`, 'system');
+}));
+
 app.post('/api/admin/start-game', (_req, res) => mutate(res, () => {
   if (state.game.status === 'active') throw bad('게임이 이미 진행 중입니다.');
   state.game.status = 'active';
   state.game.startedAt = now();
   state.game.endedAt = null;
-  addLog(`게임이 시작되었습니다. 첫 턴은 ${currentTeam().name}입니다.`, 'system');
+  state.game.laps = {};
+  const durationMs = (state.settings.gameDurationMinutes || 110) * 60 * 1000;
+  state.game.gameTimer = { endAt: new Date(Date.now() + durationMs).toISOString() };
+  addLog(`게임이 시작되었습니다. 총 ${state.settings.maxRounds}라운드, 제한시간 ${state.settings.gameDurationMinutes}분, 첫 턴은 ${currentTeam().name}입니다.`, 'system');
 }));
 
 app.post('/api/admin/end-game', (_req, res) => mutate(res, () => {
@@ -547,7 +649,19 @@ app.post('/api/admin/end-game', (_req, res) => mutate(res, () => {
   state.game.activeMiniGame = null;
   state.game.spotlight = null;
   state.game.moving = null;
+  state.game.gameTimer = null;
   addLog('운영자가 게임을 종료했습니다.', 'system');
+}));
+
+app.post('/api/admin/time-over', (_req, res) => mutate(res, () => {
+  if (state.game.status !== 'active') throw bad('게임이 진행 중이 아닙니다.');
+  state.game.status = 'ended';
+  state.game.endedAt = now();
+  state.game.activeMiniGame = null;
+  state.game.spotlight = null;
+  state.game.moving = null;
+  state.game.gameTimer = null;
+  addLog('제한시간이 종료되었습니다. Time Over!', 'system');
 }));
 
 app.post('/api/admin/reset-game', (req, res) => {
@@ -586,6 +700,8 @@ app.post('/api/admin/previous-turn', (_req, res) => mutate(res, () => {
 }));
 
 app.post('/api/admin/build-current-tower', (_req, res) => mutate(res, () => { buildCurrentTower(); }));
+app.post('/api/admin/upgrade-seoul', (_req, res) => mutate(res, () => { upgradeSeoulTower(); }));
+app.post('/api/admin/skip-seoul-upgrade', (_req, res) => mutate(res, () => { skipSeoulUpgrade(); }));
 app.post('/api/admin/sell-tower', (req, res) => mutate(res, () => { sellTowerForActiveTeam(req.body.cityIndex); }));
 app.post('/api/admin/remove-tower', (req, res) => mutate(res, () => { removeTower(req.body.cityIndex); }));
 
@@ -616,6 +732,35 @@ app.post('/api/admin/clear-mini-game', (_req, res) => mutate(res, () => {
 app.post('/api/admin/clear-spotlight', (_req, res) => mutate(res, () => {
   state.game.spotlight = null;
   addLog('스포트라이트가 제거되었습니다.', 'system');
+}));
+
+
+const TUTORIAL_SLIDE_COUNT = 9;
+
+app.post('/api/admin/tutorial-start', (_req, res) => mutate(res, () => {
+  state.game.tutorial = { slide: 0 };
+}));
+
+app.post('/api/admin/tutorial-next', (_req, res) => mutate(res, () => {
+  if (!state.game.tutorial) {
+    state.game.tutorial = { slide: 0 };
+  } else {
+    state.game.tutorial.slide = Math.min(state.game.tutorial.slide + 1, TUTORIAL_SLIDE_COUNT - 1);
+  }
+}));
+
+app.post('/api/admin/tutorial-prev', (_req, res) => mutate(res, () => {
+  if (state.game.tutorial) {
+    state.game.tutorial.slide = Math.max(state.game.tutorial.slide - 1, 0);
+  }
+}));
+
+app.post('/api/admin/tutorial-reset', (_req, res) => mutate(res, () => {
+  state.game.tutorial = { slide: 0 };
+}));
+
+app.post('/api/admin/tutorial-close', (_req, res) => mutate(res, () => {
+  state.game.tutorial = null;
 }));
 
 app.post('/api/admin/adjust-points', (req, res) => mutate(res, () => {

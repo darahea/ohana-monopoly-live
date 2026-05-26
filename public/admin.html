@@ -48,12 +48,39 @@
 
       <section class="tab-panel" data-panel="overview">
         <div class="admin-grid two-col">
+          <article class="admin-card card full-row">
+            <h2>0. 게임 설명</h2>
+            <div class="button-row wrap">
+              <button class="ghost-button" id="tutorialPrevBtn" type="button">← 이전</button>
+              <button class="primary-button" id="tutorialBtn" type="button">게임 설명</button>
+              <button class="ghost-button" id="tutorialNextBtn" type="button">다음 →</button>
+              <button class="ghost-button" id="tutorialResetBtn" type="button">처음으로</button>
+              <button class="danger-button" id="tutorialCloseBtn" type="button">닫기</button>
+            </div>
+          </article>
+
           <article class="admin-card card">
             <h2>1. 게임 제어</h2>
             <div class="button-row wrap">
               <button class="success-button" id="startGameBtn" type="button">▶ 게임 시작</button>
               <button class="danger-button" id="endGameBtn" type="button">■ 게임 종료</button>
               <button class="ghost-button" id="resetGameBtn" type="button">↻ 게임 리셋</button>
+            </div>
+            <div class="button-row wrap spacing-top">
+              <label class="dice-input-label">총 라운드 수
+                <select id="maxRoundsSelect">
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3" selected>3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                </select>
+              </label>
+              <button class="ghost-button" id="setMaxRoundsBtn" type="button">라운드 설정</button>
+              <label class="dice-input-label">게임 시간 (분)
+                <input id="gameDurationInput" type="number" min="1" max="180" value="110" style="width:100px" />
+              </label>
+              <button class="ghost-button" id="setGameDurationBtn" type="button">시간 설정</button>
             </div>
             <div class="button-row wrap spacing-top">
               <button class="ghost-button" id="previousTurnBtn" type="button">← 이전 팀</button>

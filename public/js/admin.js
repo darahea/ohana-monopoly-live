@@ -35,6 +35,19 @@
     renderCityTable(gameState);
     renderLog(gameState);
     renderBoard({ gameState, layerId: 'adminBoardTiles', centerId: null, mini: true });
+    const roundsSelect = $('maxRoundsSelect');
+    if (roundsSelect) roundsSelect.value = String(gameState.settings.maxRounds || 3);
+    const tutActive = Boolean(gameState.game?.tutorial);
+    const tutPrev = $('tutorialPrevBtn');
+    const tutNext = $('tutorialNextBtn');
+    const tutReset = $('tutorialResetBtn');
+    const tutClose = $('tutorialCloseBtn');
+    if (tutPrev) tutPrev.disabled = !tutActive;
+    if (tutNext) tutNext.disabled = !tutActive;
+    if (tutReset) tutReset.disabled = !tutActive;
+    if (tutClose) tutClose.disabled = !tutActive;
+    const durationInput = $('gameDurationInput');
+    if (durationInput) durationInput.value = String(gameState.settings.gameDurationMinutes || 110);
   }
 
   function renderSummary(gameState, activeTeam) {
@@ -44,7 +57,7 @@
     const moving = gameState.game.moving;
     $('adminSummary').innerHTML = `
       <div class="summary-line"><span>상태</span><strong>${moving ? '이동 중' : gameStatusLabel(gameState.game.status)}</strong></div>
-      <div class="summary-line"><span>라운드</span><strong>${gameState.game.round}</strong></div>
+      <div class="summary-line"><span>총 라운드</span><strong>${gameState.settings.maxRounds || '—'}</strong></div>
       <div class="summary-line"><span>현재 팀</span><strong>${escapeHtml(activeTeam?.name || '—')}</strong></div>
       <div class="summary-line"><span>위치</span><strong>${escapeHtml(formatPosition(gameState, activeTeam?.position || 0))}</strong></div>
       <div class="summary-line"><span>팀 수</span><strong>${gameState.teams.length}</strong></div>
@@ -68,26 +81,53 @@
     const currentSpace = spaceByIndex(gameState, activeTeam?.position || 0);
     const lastLanding = gameState.game.lastLanding;
     const isFreshLanding = lastLanding && lastLanding.teamId === activeTeam?.id && Number(lastLanding.spaceIndex) === Number(activeTeam?.position);
-    if (!currentSpace || currentSpace.type !== 'city') {
+    const seoulUpgradePrompt = gameState.game.spotlight?.type === 'seoul_upgrade';
+
+    if (seoulUpgradePrompt) {
+      const spotlight = gameState.game.spotlight;
+      const canAfford = spotlight.canAfford;
+      $('towerDecision').innerHTML = `<div class="decision-card ${canAfford ? 'positive' : 'warning'}">
+        <strong>✨ Seoul — Salesforce Tower 건설</strong>
+        <span class="muted">${canAfford ? '서울을 구매했습니다! 추가 투자로 Salesforce Tower를 건설하면 통행료가 대폭 상승합니다.' : '포인트가 부족하여 Salesforce Tower를 건설할 수 없습니다.'}</span>
+        <div class="decision-grid">
+          <div class="decision-metric"><span>팀 포인트</span><b>${activeTeam.points}</b></div>
+          <div class="decision-metric"><span>업그레이드 비용</span><b>${spotlight.upgradeCost}</b></div>
+          <div class="decision-metric"><span>업그레이드 후 통행료</span><b>${spotlight.upgradedFee}</b></div>
+        </div>
+        <div class="button-row">
+          ${canAfford ? `<button class="primary-button" type="button" data-action="upgrade-seoul">${spotlight.upgradeCost}포인트로 Salesforce Tower 건설</button>` : ''}
+          <button class="ghost-button" type="button" data-action="skip-seoul-upgrade">건너뛰기</button>
+        </div>
+      </div>`;
+    } else if (!currentSpace || currentSpace.type !== 'city') {
       $('towerDecision').innerHTML = `<div class="decision-card">
-        <strong>타워 구매 불가</strong>
-        <span class="muted">${escapeHtml(activeTeam?.name || '현재 팀')}은(는) 지금 ${escapeHtml(currentSpace?.label || currentSpace?.name || '보드')} 위에 있습니다. 타워는 비어 있는 도시에 막 착지했을 때만 구매할 수 있습니다.</span>
+        <strong>도시 구매 불가</strong>
+        <span class="muted">${escapeHtml(activeTeam?.name || '현재 팀')}은(는) 지금 ${escapeHtml(currentSpace?.label || currentSpace?.name || '보드')} 위에 있습니다. 도시는 빈 도시에 막 착지했을 때만 구매할 수 있습니다.</span>
       </div>`;
     } else {
       const owner = currentSpace.ownerTeamId ? teamById(gameState, currentSpace.ownerTeamId) : null;
       const canBuild = isFreshLanding && !owner && activeTeam.points >= currentSpace.cost && !gameState.game.moving;
       const ownedByActive = owner?.id === activeTeam?.id;
+      const canUpgrade = ownedByActive && currentSpace.upgradeCost && !currentSpace.upgraded && activeTeam.points >= currentSpace.upgradeCost && !gameState.game.moving;
       const cardClass = !owner && isFreshLanding ? 'positive' : owner && !ownedByActive ? 'warning' : '';
-      const action = canBuild
-        ? `<button class="primary-button" type="button" data-action="build-current-tower">${currentSpace.cost}포인트로 타워 건설</button>`
-        : !owner && isFreshLanding && activeTeam.points < currentSpace.cost
-          ? `<span class="muted">포인트가 부족합니다. ${activeTeam.name}에게 ${currentSpace.cost - activeTeam.points}포인트가 더 필요합니다.</span>`
-          : !owner
-            ? `<span class="muted">현재 팀이 이 칸에 막 착지한 직후에만 타워를 구매할 수 있습니다.</span>`
-            : `<span class="muted">타워 소유: ${escapeHtml(owner?.name || '알 수 없음')}</span>`;
+      let action = '';
+      if (canBuild) {
+        action = `<button class="primary-button" type="button" data-action="build-current-tower">${currentSpace.cost}포인트로 도시 구매</button>`;
+      } else if (canUpgrade) {
+        action = `<div class="button-row"><button class="primary-button" type="button" data-action="upgrade-seoul">${currentSpace.upgradeCost}포인트로 Salesforce Tower 건설 (통행료 ${currentSpace.upgradedFee}pts)</button><button class="ghost-button" type="button" data-action="skip-seoul-upgrade">건너뛰기</button></div>`;
+      } else if (!owner && isFreshLanding && activeTeam.points < currentSpace.cost) {
+        action = `<span class="muted">포인트가 부족하여 도시를 구매할 수 없습니다. ${activeTeam.name}에게 ${currentSpace.cost - activeTeam.points}포인트가 더 필요합니다.</span>`;
+      } else if (!owner) {
+        action = `<span class="muted">현재 팀이 이 칸에 막 착지한 직후에만 타워를 구매할 수 있습니다.</span>`;
+      } else {
+        action = `<span class="muted">타워 소유: ${escapeHtml(owner?.name || '알 수 없음')}${currentSpace.upgraded ? ' (Salesforce Tower)' : ''}</span>`;
+      }
+      const guidanceText = canBuild
+        ? '현재 팀에게 도시 구매 의사를 확인하고, 원하면 아래 버튼을 누르세요.'
+        : canUpgrade ? '서울에 Salesforce Tower를 건설할 수 있습니다!' : '';
       $('towerDecision').innerHTML = `<div class="decision-card ${cardClass}">
         <strong>${escapeHtml(currentSpace.label || currentSpace.name)}</strong>
-        <span class="muted">현재 팀에게 타워 구매 의사를 확인하고, 원하면 아래 버튼을 누르세요.</span>
+        ${guidanceText ? `<span class="muted">${guidanceText}</span>` : ''}
         <div class="decision-grid">
           <div class="decision-metric"><span>팀 포인트</span><b>${activeTeam.points}</b></div>
           <div class="decision-metric"><span>구매가</span><b>${currentSpace.cost}</b></div>
@@ -222,6 +262,11 @@
   }
 
   function initButtons() {
+    $('setMaxRoundsBtn').addEventListener('click', (event) => withButton(event.currentTarget, async () => {
+      await run('/api/admin/set-max-rounds', { maxRounds: Number($('maxRoundsSelect').value) });
+      showToast('라운드가 설정되었습니다.');
+    }));
+
     $('startGameBtn').addEventListener('click', (event) => withButton(event.currentTarget, async () => {
       await run('/api/admin/start-game');
       showToast('게임이 시작되었습니다.');
@@ -264,6 +309,26 @@
       showToast('미니게임을 제거했습니다.');
     }));
 
+    $('tutorialBtn').addEventListener('click', (event) => withButton(event.currentTarget, async () => {
+      await run('/api/admin/tutorial-start');
+    }));
+
+    $('tutorialNextBtn').addEventListener('click', (event) => withButton(event.currentTarget, async () => {
+      await run('/api/admin/tutorial-next');
+    }));
+
+    $('tutorialPrevBtn').addEventListener('click', (event) => withButton(event.currentTarget, async () => {
+      await run('/api/admin/tutorial-prev');
+    }));
+
+    $('tutorialResetBtn').addEventListener('click', (event) => withButton(event.currentTarget, async () => {
+      await run('/api/admin/tutorial-reset');
+    }));
+
+    $('tutorialCloseBtn').addEventListener('click', (event) => withButton(event.currentTarget, async () => {
+      await run('/api/admin/tutorial-close');
+    }));
+
     const addTeamBtn = $('addTeamBtn');
     if (addTeamBtn) {
       addTeamBtn.addEventListener('click', (event) => withButton(event.currentTarget, async () => {
@@ -271,6 +336,13 @@
         showToast('팀을 추가했습니다.');
       }));
     }
+
+    $('setGameDurationBtn').addEventListener('click', (event) => withButton(event.currentTarget, async () => {
+      const minutes = Number($('gameDurationInput').value);
+      if (!minutes || minutes < 1 || minutes > 180) { showToast('1~180분 사이로 입력하세요.'); return; }
+      await run('/api/admin/set-game-duration', { minutes });
+      showToast(`게임 시간 ${minutes}분으로 설정`);
+    }));
   }
 
   function initForms() {
@@ -327,6 +399,12 @@
         if (action === 'build-current-tower') {
           await run('/api/admin/build-current-tower');
           showToast('타워를 건설했습니다.');
+        } else if (action === 'upgrade-seoul') {
+          await run('/api/admin/upgrade-seoul');
+          showToast('서울에 Salesforce Tower를 건설했습니다!');
+        } else if (action === 'skip-seoul-upgrade') {
+          await run('/api/admin/skip-seoul-upgrade');
+          showToast('서울 Salesforce Tower 건설을 건너뛰었습니다.');
         } else if (action === 'sell-tower') {
           await run('/api/admin/sell-tower', { cityIndex: Number(button.dataset.cityIndex) });
           showToast('타워를 판매했습니다.');

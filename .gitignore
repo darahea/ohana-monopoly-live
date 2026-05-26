@@ -1,1 +1,3 @@
+node_modules/
 game-state.json
+.DS_Store
