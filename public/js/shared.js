@@ -1,14 +1,11 @@
 window.Ohana = (() => {
   const state = { value: null, socket: null };
 
-  // 7x7 grid path (49 cells total, but we use only 24 perimeter cells; board has 20 tiles
-  // so we map them onto a 6x6 perimeter starting from top-left, going right then down then left then up)
-  // We keep the original layout from v2: top row, right column, bottom row reversed, left column reversed.
   const GRID_POSITIONS = [
-    [1,6], [2,6], [3,6], [4,6], [5,6], [6,6],
-    [6,5], [6,4], [6,3], [6,2], [6,1],
-    [5,1], [4,1], [3,1], [2,1], [1,1],
-    [1,2], [1,3], [1,4], [1,5]
+    [1,5], [2,5], [3,5], [4,5], [5,5],
+    [5,4], [5,3], [5,2], [5,1],
+    [4,1], [3,1], [2,1], [1,1],
+    [1,2], [1,3], [1,4]
   ];
 
   const $ = (id) => document.getElementById(id);
@@ -128,7 +125,8 @@ window.Ohana = (() => {
       Number(lastLandingIndex) === index ? 'is-landing' : '',
       Number(movingIndex) === index ? 'is-moving' : '',
       mini ? 'mini-tile' : '',
-      space.id === 'seoul' && space.upgraded ? 'seoul-upgraded' : ''
+      space.id === 'seoul' && space.upgraded ? 'seoul-upgraded' : '',
+      space.tier === 'high' && space.id !== 'seoul' && owner ? 'high-tier-glow' : ''
     ].filter(Boolean).join(' ');
 
     const ownerBadge = owner
@@ -177,9 +175,9 @@ window.Ohana = (() => {
   const TUTORIAL_SLIDES = [
     { type: 'cover', title: 'Tutorial', image: '/assets/brand/ohana-monopoly-badge.png' },
     { title: 'How to Win', body: '**Buy** cities\n**Collect** tolls from others\n**Most points** at the end wins!', bodyKo: '도시를 **구매**하고\n다른 팀에게 **통행료**를 받고\n가장 많은 **포인트** = 우승!' },
-    { title: 'Your Turn', body: '🎲 Roll **a die, twice**\nAdd the two numbers\nMove that many spaces', bodyKo: '🎲 주사위 **두 번** 굴려서\n두 숫자를 더한 만큼\n말을 이동합니다' },
+    { title: 'Your Turn', body: '🎲 Roll **two dies,**\nAdd the two numbers\nMove that many spaces', bodyKo: '🎲 주사위 **두 개** 굴려서\n두 숫자를 더한 만큼\n말을 이동합니다' },
     { title: 'START', sub: '보드를 한 바퀴 돌 때마다 보너스를 받습니다', body: 'Pass or land on **START**\n→ **+5pts** every time!', bodyKo: '**START**를 지나거나 도착\n→ 매번 **+5pts** 획득!' },
-    { title: 'Cities', sub: '(서울을 제외한 😢) 보드 위 모든 도시는\nSalesforce Tower가 있는 도시입니다', body: 'Empty city → **Buy** it!\nOther team\'s → **Pay toll**!\n**3 tiers** — Higher cost = Higher reward!', bodySmall: '$ Buy 4 / Toll 8 · $$ Buy 6 / Toll 12 · $$$ Buy 10 / Toll 20', bodyKo: '빈 도시 → **구매** 가능!\n다른 팀 도시 → **통행료** 지불!\n**3단계** 등급 — 비쌀수록 수익 UP!', bodyKoSmall: '$ 구매4 통행료8 · $$ 구매6 통행료12 · $$$ 구매10 통행료20' },
+    { title: 'Cities', body: 'Empty city → **Buy** it!\nOther team\'s → **Pay toll**!\n**3 tiers** — Higher cost = Higher reward!', bodySmall: '$ Buy 4 / Toll 8 · $$ Buy 6 / Toll 12 · $$$ Buy 10 / Toll 20', bodyKo: '빈 도시 → **구매** 가능!\n다른 팀 도시 → **통행료** 지불!\n**3단계** 등급 — 비쌀수록 수익 UP!', bodyKoSmall: '$ 구매4 통행료8 · $$ 구매6 통행료12 · $$$ 구매10 통행료20' },
     { title: 'Mini Games', sub: '누가 밟든 전원 참여! 역전의 기회입니다', body: 'Land here → **Everyone** plays!', bodySmall: '🥇 1st +20pts  🥈 2nd +10pts  🥉 3rd +5pts', bodyKo: '이 칸에 도착 → **전원** 참여!', bodyKoSmall: '🥇 1등 +20pts  🥈 2등 +10pts  🥉 3등 +5pts' },
     { title: '✨ Seoul Special ✨', sub: '서울에만 Salesforce Tower가 없지만\n여러분이 세울 수 있어요!', body: 'Buy Seoul → Pay **5pts** more\n→ Build **Salesforce Tower**!\nToll jumps to **20pts**', bodyKo: '서울 구매 후 → **5pts** 추가 투자\n→ **Salesforce Tower** 건설!\n통행료 **20pts**로 대폭 상승' },
     { title: 'Selling Towers', sub: '포인트가 부족할 때 전략적으로 활용하세요', body: 'Your turn → **Sell** your tower\nGet back **half** the cost', bodyKo: '자기 턴에 타워 **판매** 가능\n구매가의 **절반** 환불' },

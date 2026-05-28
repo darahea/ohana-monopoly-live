@@ -107,54 +107,6 @@
   let prevMovingStep = null;
   const trendMap = {}; // { teamId: { direction: 'up'|'down', at: timestamp } }
 
-  // Game timer state
-  let gameTimerInterval = null;
-  let gameTimerEndAt = null;
-  let gameTimerExpired = false;
-
-  function updateGameTimer() {
-    const display = $('gameTimerDisplay');
-    if (!display || !gameTimerEndAt) return;
-    const remaining = Math.max(0, Math.ceil((new Date(gameTimerEndAt).getTime() - Date.now()) / 1000));
-    if (remaining <= 0 && !gameTimerExpired) {
-      gameTimerExpired = true;
-      display.textContent = "TIME OVER";
-      display.classList.add('game-timer-expired');
-      clearInterval(gameTimerInterval);
-      gameTimerInterval = null;
-      api('/api/admin/time-over').catch(() => {});
-      return;
-    }
-    if (remaining > 0) {
-      const mins = Math.floor(remaining / 60);
-      const secs = remaining % 60;
-      display.textContent = `⏱ ${mins}:${String(secs).padStart(2, '0')}`;
-      display.classList.remove('game-timer-expired');
-      display.classList.toggle('game-timer-warn', remaining <= 300 && remaining > 60);
-      display.classList.toggle('game-timer-critical', remaining <= 60);
-    }
-  }
-
-  function syncGameTimer(gameState) {
-    const display = $('gameTimerDisplay');
-    if (!display) return;
-    const gameTimer = gameState.game?.gameTimer;
-    if (gameTimer && gameTimer.endAt && gameState.game.status === 'active') {
-      display.classList.remove('hidden');
-      if (gameTimerEndAt !== gameTimer.endAt) {
-        gameTimerEndAt = gameTimer.endAt;
-        gameTimerExpired = false;
-        if (gameTimerInterval) clearInterval(gameTimerInterval);
-        gameTimerInterval = setInterval(updateGameTimer, 1000);
-        updateGameTimer();
-      }
-    } else {
-      display.classList.add('hidden');
-      if (gameTimerInterval) { clearInterval(gameTimerInterval); gameTimerInterval = null; }
-      gameTimerEndAt = null;
-      gameTimerExpired = false;
-    }
-  }
 
   function render(gameState) {
     const isActive = gameState.game.status === 'active';
@@ -163,7 +115,6 @@
     renderRanking(gameState, activeTeam);
     renderBoard({ gameState, layerId: 'tilesLayer', centerId: 'centerSpotlight' });
     renderTutorialOverlay(gameState);
-    syncGameTimer(gameState);
 
     if (prevStatus && prevStatus !== 'active' && gameState.game.status === 'active') {
       showGameStartOverlay();
@@ -405,7 +356,7 @@
       return `<div class="rank-row ${rowClass}" data-team-id="${escapeHtml(team.id)}" style="--team-color:${escapeHtml(team.color)}">
         <div class="rank-badge">${rankLabel}</div>
         <div class="rank-team">
-          <strong>${escapeHtml(team.name)}</strong>
+          <strong>Team #${parseInt(team.id.replace('team-', ''), 10)}: ${escapeHtml(team.name)}</strong>
           <span>${towers} tower${towers !== 1 ? 's' : ''}</span>
         </div>
         ${isCurrent ? '<img src="/assets/astro.png" alt="" class="rank-astro" />' : ''}

@@ -46,8 +46,6 @@
     if (tutNext) tutNext.disabled = !tutActive;
     if (tutReset) tutReset.disabled = !tutActive;
     if (tutClose) tutClose.disabled = !tutActive;
-    const durationInput = $('gameDurationInput');
-    if (durationInput) durationInput.value = String(gameState.settings.gameDurationMinutes || 110);
   }
 
   function renderSummary(gameState, activeTeam) {
@@ -337,12 +335,6 @@
       }));
     }
 
-    $('setGameDurationBtn').addEventListener('click', (event) => withButton(event.currentTarget, async () => {
-      const minutes = Number($('gameDurationInput').value);
-      if (!minutes || minutes < 1 || minutes > 180) { showToast('1~180분 사이로 입력하세요.'); return; }
-      await run('/api/admin/set-game-duration', { minutes });
-      showToast(`게임 시간 ${minutes}분으로 설정`);
-    }));
   }
 
   function initForms() {

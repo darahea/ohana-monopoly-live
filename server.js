@@ -41,31 +41,25 @@ function defaultTeamAt(index) {
   };
 }
 
-const DEFAULT_TEAM_COUNT = 6;
+const DEFAULT_TEAM_COUNT = 8;
 
 const DEFAULT_BOARD = [
   { id: 'start', type: 'start', name: 'START', label: 'START' },                                                                                                                                       // 0
-  // 🔴 HIGH right at start (HQ) — unreachable from START with 2 dice
-  { id: 'san-francisco', type: 'city', name: 'San Francisco', label: 'San Francisco', subtitle: '샌프란시스코, 미국', tier: 'high', tag: 'HQ', cost: 10, fee: 8, image: '/assets/cities/san-francisco.webp' },  // 1
-  { id: 'singapore', type: 'city', name: 'Singapore', label: 'Singapore', subtitle: '싱가포르', tier: 'low', cost: 4, fee: 3, image: '/assets/cities/singapore.webp' },                                  // 2
+  { id: 'san-francisco', type: 'city', name: 'San Francisco', label: 'San Francisco', subtitle: '샌프란시스코, 미국', tier: 'high', tag: 'HQ', cost: 10, fee: 15, image: '/assets/cities/san-francisco.webp' },  // 1
+  { id: 'singapore', type: 'city', name: 'Singapore', label: 'Singapore', subtitle: '싱가포르', tier: 'low', cost: 4, fee: 6, image: '/assets/cities/singapore.webp' },                                  // 2
   { id: 'mini-1', type: 'mini', name: 'Mini Game', label: 'Mini Game' },                                                                                                                                // 3
-  { id: 'london', type: 'city', name: 'London', label: 'London', subtitle: '런던, 영국', tier: 'mid', tag: 'Tower', cost: 6, fee: 5, image: '/assets/cities/london.webp' },                            // 4
-  { id: 'dubai', type: 'city', name: 'Dubai', label: 'Dubai', subtitle: '두바이, 아랍에미리트', tier: 'mid', cost: 6, fee: 5, image: '/assets/cities/dubai.webp' },                                    // 5 corner
-  { id: 'paris', type: 'city', name: 'Paris', label: 'Paris', subtitle: '파리, 프랑스', tier: 'low', cost: 4, fee: 3, image: '/assets/cities/paris.webp' },                                            // 6
-  { id: 'sydney', type: 'city', name: 'Sydney', label: 'Sydney', subtitle: '시드니, 호주', tier: 'mid', tag: 'Tower', cost: 6, fee: 5, image: '/assets/cities/sydney.webp' },                          // 7
+  { id: 'london', type: 'city', name: 'London', label: 'London', subtitle: '런던, 영국', tier: 'mid', tag: 'Tower', cost: 6, fee: 9, image: '/assets/cities/london.webp' },                            // 4
+  { id: 'paris', type: 'city', name: 'Paris', label: 'Paris', subtitle: '파리, 프랑스', tier: 'low', cost: 4, fee: 6, image: '/assets/cities/paris.webp' },                                            // 5
+  { id: 'sydney', type: 'city', name: 'Sydney', label: 'Sydney', subtitle: '시드니, 호주', tier: 'mid', tag: 'Tower', cost: 6, fee: 9, image: '/assets/cities/sydney.webp' },                          // 6
+  { id: 'taipei', type: 'city', name: 'Taipei', label: 'Taipei', subtitle: '타이페이, 대만', tier: 'mid', cost: 6, fee: 9, image: '/assets/cities/taipei.webp' },                                      // 7
   { id: 'mini-2', type: 'mini', name: 'Mini Game', label: 'Mini Game' },                                                                                                                                // 8
-  { id: 'barcelona', type: 'city', name: 'Barcelona', label: 'Barcelona', subtitle: '바르셀로나, 스페인', tier: 'low', cost: 4, fee: 3, image: '/assets/cities/barcelona.webp' },                       // 9
-  { id: 'taipei', type: 'city', name: 'Taipei', label: 'Taipei', subtitle: '타이페이, 대만', tier: 'mid', cost: 6, fee: 5, image: '/assets/cities/taipei.webp' },                                      // 10 corner
-  { id: 'toronto', type: 'city', name: 'Toronto', label: 'Toronto', subtitle: '토론토, 캐나다', tier: 'low', cost: 4, fee: 3, image: '/assets/cities/toronto.webp' },                                   // 11
-  { id: 'new-york', type: 'city', name: 'New York', label: 'New York', subtitle: '뉴욕, 미국', tier: 'mid', tag: 'Tower', cost: 6, fee: 5, image: '/assets/cities/new-york.webp' },                  // 12
-  { id: 'berlin', type: 'city', name: 'Berlin', label: 'Berlin', subtitle: '베를린, 독일', tier: 'low', cost: 4, fee: 3, image: '/assets/cities/berlin.webp' },                                         // 13
-  { id: 'mini-3', type: 'mini', name: 'Mini Game', label: 'Mini Game' },                                                                                                                                // 14
-  { id: 'chicago', type: 'city', name: 'Chicago', label: 'Chicago', subtitle: '시카고, 미국', tier: 'low', cost: 4, fee: 3, image: '/assets/cities/chicago.webp' },                                     // 15 corner
-  // 🔴 HIGH gauntlet at end
-  { id: 'tokyo', type: 'city', name: 'Tokyo', label: 'Tokyo', subtitle: '도쿄, 일본', tier: 'high', tag: 'Tower', cost: 10, fee: 8, image: '/assets/cities/tokyo.webp' },                              // 16
-  { id: 'dublin', type: 'city', name: 'Dublin', label: 'Dublin', subtitle: '더블린, 아일랜드', tier: 'high', cost: 10, fee: 8, image: '/assets/cities/dublin.webp' },                                  // 17
-  { id: 'mini-4', type: 'mini', name: 'Mini Game', label: 'Mini Game' },                                                                                                                                // 18
-  { id: 'seoul', type: 'city', name: 'Seoul', label: 'Seoul', subtitle: '서울, 대한민국', tier: 'high', tag: 'Hometown', cost: 10, fee: 8, upgradeCost: 5, upgradedFee: 20, image: '/assets/cities/seoul.webp' }  // 19
+  { id: 'new-york', type: 'city', name: 'New York', label: 'New York', subtitle: '뉴욕, 미국', tier: 'mid', tag: 'Tower', cost: 6, fee: 9, image: '/assets/cities/new-york.webp' },                    // 9
+  { id: 'berlin', type: 'city', name: 'Berlin', label: 'Berlin', subtitle: '베를린, 독일', tier: 'low', cost: 4, fee: 6, image: '/assets/cities/berlin.webp' },                                         // 10
+  { id: 'chicago', type: 'city', name: 'Chicago', label: 'Chicago', subtitle: '시카고, 미국', tier: 'low', cost: 4, fee: 6, image: '/assets/cities/chicago.webp' },                                     // 11
+  { id: 'mini-3', type: 'mini', name: 'Mini Game', label: 'Mini Game' },                                                                                                                                // 12
+  { id: 'tokyo', type: 'city', name: 'Tokyo', label: 'Tokyo', subtitle: '도쿄, 일본', tier: 'high', tag: 'Tower', cost: 10, fee: 15, image: '/assets/cities/tokyo.webp' },                              // 13
+  { id: 'dublin', type: 'city', name: 'Dublin', label: 'Dublin', subtitle: '더블린, 아일랜드', tier: 'high', cost: 10, fee: 15, image: '/assets/cities/dublin.webp' },                                  // 14
+  { id: 'seoul', type: 'city', name: 'Seoul', label: 'Seoul', subtitle: '서울, 대한민국', tier: 'high', tag: 'Hometown', cost: 10, fee: 15, upgradeCost: 5, upgradedFee: 50, image: '/assets/cities/seoul.webp' }  // 15
 ];
 
 const app = express();
@@ -87,7 +81,7 @@ function makeInitialTeams(count) {
   const n = Math.max(MIN_TEAMS, Math.min(MAX_TEAMS, Number(count) || DEFAULT_TEAM_COUNT));
   return Array.from({ length: n }, (_, index) => ({
     ...defaultTeamAt(index),
-    points: 5,
+    points: 10,
     position: 0,
     previousPosition: 0
   }));
@@ -101,12 +95,12 @@ function createInitialState(teamCount = DEFAULT_TEAM_COUNT) {
     title: 'Ohana Monopoly',
     createdAt: now(),
     updatedAt: now(),
-    settings: { startPoints: 5, passStartPoints: 5, miniGameAwards: [20, 10, 5], moveStepMs: MOVE_STEP_MS, maxRounds: 3, gameDurationMinutes: 110 },
-    game: { status: 'ready', round: 1, currentTurnIndex: 0, turnsPlayed: 0, lastDice: null, lastLanding: null, spotlight: null, activeMiniGame: null, moving: null, startedAt: null, endedAt: null, laps: {}, timer: null },
+    settings: { startPoints: 10, passStartPoints: 5, miniGameAwards: [20, 10, 5], moveStepMs: MOVE_STEP_MS, maxRounds: 3 },
+    game: { status: 'ready', round: 1, currentTurnIndex: 0, turnsPlayed: 0, lastDice: null, lastLanding: null, spotlight: null, activeMiniGame: null, moving: null, startedAt: null, endedAt: null, laps: {} },
     teams,
     board,
     pendingFees: [],
-    log: [{ id: newId('log'), at: now(), type: 'system', message: `게임이 생성되었습니다. ${teams.length}개 팀이 각 20포인트로 시작합니다.` }]
+    log: [{ id: newId('log'), at: now(), type: 'system', message: `게임이 생성되었습니다. ${teams.length}개 팀이 각 10포인트로 시작합니다.` }]
   };
 }
 
@@ -593,7 +587,7 @@ function addTeam() {
   if (state.game.status === 'active') throw bad('게임이 진행 중일 때는 팀을 추가할 수 없습니다.');
   if (state.teams.length >= MAX_TEAMS) throw bad(`최대 ${MAX_TEAMS}개 팀까지만 추가할 수 있습니다.`);
   const index = state.teams.length;
-  const newTeam = { ...defaultTeamAt(index), points: 5, position: 0, previousPosition: 0 };
+  const newTeam = { ...defaultTeamAt(index), points: 10, position: 0, previousPosition: 0 };
   while (state.teams.some((t) => t.id === newTeam.id)) {
     newTeam.id = `${newTeam.id}-${crypto.randomUUID().slice(0, 4)}`;
   }
@@ -625,22 +619,13 @@ app.post('/api/admin/set-max-rounds', (req, res) => mutate(res, () => {
   addLog(`총 라운드가 ${rounds}로 설정되었습니다.`, 'system');
 }));
 
-app.post('/api/admin/set-game-duration', (req, res) => mutate(res, () => {
-  const minutes = Number(req.body.minutes);
-  if (!Number.isInteger(minutes) || minutes < 1 || minutes > 180) throw bad('게임 시간은 1~180분 사이의 정수여야 합니다.');
-  state.settings.gameDurationMinutes = minutes;
-  addLog(`게임 제한시간이 ${minutes}분으로 설정되었습니다.`, 'system');
-}));
-
 app.post('/api/admin/start-game', (_req, res) => mutate(res, () => {
   if (state.game.status === 'active') throw bad('게임이 이미 진행 중입니다.');
   state.game.status = 'active';
   state.game.startedAt = now();
   state.game.endedAt = null;
   state.game.laps = {};
-  const durationMs = (state.settings.gameDurationMinutes || 110) * 60 * 1000;
-  state.game.gameTimer = { endAt: new Date(Date.now() + durationMs).toISOString() };
-  addLog(`게임이 시작되었습니다. 총 ${state.settings.maxRounds}라운드, 제한시간 ${state.settings.gameDurationMinutes}분, 첫 턴은 ${currentTeam().name}입니다.`, 'system');
+  addLog(`게임이 시작되었습니다. 총 ${state.settings.maxRounds}라운드, 첫 턴은 ${currentTeam().name}입니다.`, 'system');
 }));
 
 app.post('/api/admin/end-game', (_req, res) => mutate(res, () => {
@@ -649,19 +634,7 @@ app.post('/api/admin/end-game', (_req, res) => mutate(res, () => {
   state.game.activeMiniGame = null;
   state.game.spotlight = null;
   state.game.moving = null;
-  state.game.gameTimer = null;
   addLog('운영자가 게임을 종료했습니다.', 'system');
-}));
-
-app.post('/api/admin/time-over', (_req, res) => mutate(res, () => {
-  if (state.game.status !== 'active') throw bad('게임이 진행 중이 아닙니다.');
-  state.game.status = 'ended';
-  state.game.endedAt = now();
-  state.game.activeMiniGame = null;
-  state.game.spotlight = null;
-  state.game.moving = null;
-  state.game.gameTimer = null;
-  addLog('제한시간이 종료되었습니다. Time Over!', 'system');
 }));
 
 app.post('/api/admin/reset-game', (req, res) => {
