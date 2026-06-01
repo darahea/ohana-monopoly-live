@@ -458,7 +458,7 @@ a { color: inherit; }
 }
 .broadcast-shell {
   display: grid;
-  grid-template-columns: 400px 1fr;
+  grid-template-columns: 460px 1fr;
   gap: 32px;
   padding: 16px;
   height: 100vh;
@@ -478,8 +478,10 @@ a { color: inherit; }
   flex-direction: column;
   gap: 14px;
   height: 100%;
-  overflow: hidden;
+  overflow: visible;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+  position: relative;
+  z-index: 1;
 }
 
 /* Large Current Turn Card (prominent) */
@@ -496,12 +498,12 @@ a { color: inherit; }
   flex-shrink: 0;
 }
 .brand-logo-wrap {
-  margin-bottom: 12px;
+  margin-bottom: 6px;
   text-align: center;
 }
 .brand-logo {
   width: 100%;
-  max-width: 260px;
+  max-width: 200px;
   height: auto;
   object-fit: contain;
   filter: drop-shadow(0 4px 14px rgba(0, 0, 0, 0.25));
@@ -518,9 +520,12 @@ a { color: inherit; }
   font-family: var(--font-en);
   color: #fff;
   margin-bottom: 12px;
+}
+.round-line {
   display: flex;
-  flex-direction: column;
-  gap: 6px;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
 }
 .round-label {
   font-size: 14px;
@@ -528,25 +533,36 @@ a { color: inherit; }
   letter-spacing: 0.12em;
   opacity: 0.7;
 }
-.round-progress-bar {
-  height: 8px;
-  background: rgba(255, 255, 255, 0.15);
-  border-radius: 999px;
-  overflow: hidden;
-}
-.round-progress-fill {
-  height: 100%;
-  background: linear-gradient(90deg, #0176d3, #00b3ff);
-  border-radius: 999px;
-  transition: width 0.5s ease;
-}
-.round-nums {
-  font-size: 28px;
-  font-weight: 800;
-}
 .round-current {
-  font-size: 36px;
+  font-size: 32px;
+  font-weight: 800;
   color: #00b3ff;
+  line-height: 1;
+}
+.round-team {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  border: 2px solid var(--team-color, var(--sf-blue));
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08), 0 2px 6px rgba(0, 0, 0, 0.18);
+  margin-left: auto;
+}
+.round-team-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--team-color, var(--sf-blue));
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.85);
+  flex-shrink: 0;
+}
+.round-team-name {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
 }
 .ct-main {
   display: flex;
@@ -621,10 +637,9 @@ a { color: inherit; }
 .ranking-list {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  overflow-y: auto;
-  overflow-x: visible;
-  padding-right: 4px;
+  gap: 8px;
+  overflow: visible;
+  padding: 6px 4px;
   flex: 1;
   min-height: 0;
   scrollbar-width: none;
@@ -641,12 +656,42 @@ a { color: inherit; }
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 10px;
   border-left: 4px solid var(--team-color, var(--sf-blue));
-  transition: background 0.15s;
+  transition: background 0.25s ease, transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease;
+  transform-origin: left center;
+  z-index: 0;
 }
 .rank-row.is-current {
   grid-template-columns: 40px 1fr auto auto;
-  background: rgba(255, 255, 255, 0.18);
-  box-shadow: 0 0 0 2px var(--team-color, var(--sf-blue)) inset, 0 4px 12px rgba(0, 0, 0, 0.18);
+  background: rgba(20, 35, 75, 0.92);
+  box-shadow:
+    0 0 0 2px var(--team-color, var(--sf-blue)) inset,
+    0 0 0 4px rgba(255, 255, 255, 0.12),
+    0 8px 22px rgba(0, 0, 0, 0.28),
+    0 0 28px var(--team-color, var(--sf-blue));
+  transform: scale(1.08);
+  transform-origin: center center;
+  z-index: 100;
+  animation: rank-current-pulse 1.8s ease-in-out infinite;
+}
+@keyframes rank-current-pulse {
+  0%, 100% {
+    box-shadow:
+      0 0 0 2px var(--team-color, var(--sf-blue)) inset,
+      0 0 0 4px rgba(255, 255, 255, 0.12),
+      0 8px 22px rgba(0, 0, 0, 0.28),
+      0 0 24px var(--team-color, var(--sf-blue));
+  }
+  50% {
+    box-shadow:
+      0 0 0 2px var(--team-color, var(--sf-blue)) inset,
+      0 0 0 5px rgba(255, 255, 255, 0.22),
+      0 10px 28px rgba(0, 0, 0, 0.32),
+      0 0 40px var(--team-color, var(--sf-blue));
+  }
+}
+.rank-row.is-current .rank-badge {
+  background: var(--team-color, var(--sf-blue));
+  color: #fff;
 }
 .rank-row.is-finished {
   border: 2px solid rgba(255, 255, 255, 0.3);

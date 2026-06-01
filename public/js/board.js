@@ -317,46 +317,51 @@
   }
 
   function renderRoundDisplay(gameState, activeTeam) {
-    const maxRounds = gameState.settings?.maxRounds || 3;
-    if (!activeTeam) {
-      $('roundDisplay').innerHTML = `<div class="round-label">ROUND</div>
-        <div class="round-progress-bar"><div class="round-progress-fill" style="width:0%"></div></div>
-        <div class="round-nums">— / ${maxRounds}</div>`;
-      return;
-    }
-    const currentLap = Math.min((gameState.game?.laps?.[activeTeam?.id] || 0) + 1, maxRounds);
-    const pct = Math.round((currentLap / maxRounds) * 100);
-    $('roundDisplay').innerHTML = `<div class="round-label">ROUND</div>
-      <div class="round-progress-bar"><div class="round-progress-fill" style="width:${pct}%"></div></div>
-      <div class="round-nums"><span class="round-current">${currentLap}</span> / ${maxRounds}</div>`;
+    const round = gameState.game?.round || 1;
+    const teamHtml = activeTeam
+      ? `<div class="round-team" style="--team-color:${escapeHtml(activeTeam.color)}">
+          <span class="round-team-dot"></span>
+          <span class="round-team-name">${escapeHtml(activeTeam.name)}</span>
+        </div>`
+      : '';
+    $('roundDisplay').innerHTML = `<div class="round-line">
+        <span class="round-label">ROUND</span>
+        <span class="round-current">${round}</span>
+        ${teamHtml}
+      </div>`;
   }
 
   function renderRanking(gameState, activeTeam) {
-    // Sort teams by points descending; preserve team order as tiebreak
-    const ranked = [...gameState.teams]
+    // Compute rank by points (for badge), but render rows in team-number order
+    const sortedByPoints = [...gameState.teams]
       .map((team, originalIdx) => ({ team, originalIdx }))
       .sort((a, b) => b.team.points - a.team.points || a.originalIdx - b.originalIdx);
+    const rankByTeamId = {};
+    for (let i = 0; i < sortedByPoints.length; i++) {
+      const prev = i > 0 ? sortedByPoints[i - 1] : null;
+      const rank = (prev && sortedByPoints[i].team.points === prev.team.points)
+        ? rankByTeamId[prev.team.id]
+        : i + 1;
+      rankByTeamId[sortedByPoints[i].team.id] = rank;
+    }
 
     const finished = gameState.game?.finished || [];
-    const ranks = [];
-    for (let i = 0; i < ranked.length; i++) {
-      ranks[i] = (i === 0 || ranked[i].team.points !== ranked[i - 1].team.points) ? i + 1 : ranks[i - 1];
-    }
     const now = Date.now();
-    $('rankingList').innerHTML = ranked.map(({ team }, idx) => {
+    $('rankingList').innerHTML = gameState.teams.map((team) => {
       const isCurrent = activeTeam?.id === team.id;
       const isFinished = finished.includes(team.id);
       const towers = gameState.board.filter((s) => s.type === 'city' && s.ownerTeamId === team.id).length;
-      const rankLabel = ordinal(ranks[idx]);
+      const rankLabel = ordinal(rankByTeamId[team.id]);
       const rowClass = isFinished ? 'is-finished' : isCurrent ? 'is-current' : '';
       const trend = trendMap[team.id];
       const trendHtml = (trend && now - trend.at < 3000)
         ? `<span class="rank-trend rank-trend-${trend.direction}">${trend.direction === 'up' ? '▲' : '▼'}</span>`
         : '';
+      const teamNum = parseInt(team.id.replace('team-', ''), 10);
       return `<div class="rank-row ${rowClass}" data-team-id="${escapeHtml(team.id)}" style="--team-color:${escapeHtml(team.color)}">
         <div class="rank-badge">${rankLabel}</div>
         <div class="rank-team">
-          <strong>Team #${parseInt(team.id.replace('team-', ''), 10)}: ${escapeHtml(team.name)}</strong>
+          <strong>Team #${teamNum}: ${escapeHtml(team.name)}</strong>
           <span>${towers} tower${towers !== 1 ? 's' : ''}</span>
         </div>
         ${isCurrent ? '<img src="/assets/astro.png" alt="" class="rank-astro" />' : ''}

@@ -179,7 +179,7 @@ window.Ohana = (() => {
     { title: 'START', sub: '보드를 한 바퀴 돌 때마다 보너스를 받습니다', body: 'Pass or land on **START**\n→ **+5pts** every time!', bodyKo: '**START**를 지나거나 도착\n→ 매번 **+5pts** 획득!' },
     { title: 'Cities', body: 'Empty city → **Buy** it!\nOther team\'s → **Pay toll**!\n**3 tiers** — Higher cost = Higher reward!', bodySmall: '$ Buy 4 / Toll 8 · $$ Buy 6 / Toll 12 · $$$ Buy 10 / Toll 20', bodyKo: '빈 도시 → **구매** 가능!\n다른 팀 도시 → **통행료** 지불!\n**3단계** 등급 — 비쌀수록 수익 UP!', bodyKoSmall: '$ 구매4 통행료8 · $$ 구매6 통행료12 · $$$ 구매10 통행료20' },
     { title: 'Mini Games', sub: '누가 밟든 전원 참여! 역전의 기회입니다', body: 'Land here → **Everyone** plays!', bodySmall: '🥇 1st +20pts  🥈 2nd +10pts  🥉 3rd +5pts', bodyKo: '이 칸에 도착 → **전원** 참여!', bodyKoSmall: '🥇 1등 +20pts  🥈 2등 +10pts  🥉 3등 +5pts' },
-    { title: '✨ Seoul Special ✨', sub: '서울에만 Salesforce Tower가 없지만\n여러분이 세울 수 있어요!', body: 'Buy Seoul → Pay **5pts** more\n→ Build **Salesforce Tower**!\nToll jumps to **20pts**', bodyKo: '서울 구매 후 → **5pts** 추가 투자\n→ **Salesforce Tower** 건설!\n통행료 **20pts**로 대폭 상승' },
+    { title: '✨ Seoul Special ✨', sub: '서울에는 Salesforce Tower가 없지만\n여러분이 세울 수 있어요!', body: 'Buy Seoul → Pay **5pts** more\n→ Build **Salesforce Tower**!\nToll jumps to **20pts**', bodyKo: '서울 구매 후 → **5pts** 추가 투자\n→ **Salesforce Tower** 건설!\n통행료 **20pts**로 대폭 상승' },
     { title: 'Selling Towers', sub: '포인트가 부족할 때 전략적으로 활용하세요', body: 'Your turn → **Sell** your tower\nGet back **half** the cost', bodyKo: '자기 턴에 타워 **판매** 가능\n구매가의 **절반** 환불' },
     { title: '🏆 Winning', sub: '라운드 완료 또는 제한시간 종료 시 게임이 끝납니다', body: 'All rounds complete **OR** time runs out\n→ **Most points** wins!', bodyKo: '모든 라운드 완료 **또는** 제한시간 종료\n→ **최다 포인트** 팀 우승!' }
   ];
