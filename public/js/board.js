@@ -97,6 +97,38 @@
     playTone(660, 0.1, 'sine', 0.15);
     setTimeout(() => playTone(880, 0.12, 'sine', 0.15), 80);
   }
+
+  // Sad-trombone-style "wah-wah-waaah" — playful, mocking
+  function sfxSecretSwap() {
+    const ctx = getAudioCtx();
+    const notes = [
+      { freq: 392.00, dur: 0.22, delay: 0,    slideTo: 369.99 }, // G4 → F#4
+      { freq: 369.99, dur: 0.22, delay: 230,  slideTo: 349.23 }, // F#4 → F4
+      { freq: 349.23, dur: 0.55, delay: 470,  slideTo: 311.13 }  // F4 → Eb4 (drawn out)
+    ];
+    notes.forEach((n) => {
+      setTimeout(() => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(n.freq, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(n.slideTo, ctx.currentTime + n.dur);
+        gain.gain.setValueAtTime(0.001, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.28, ctx.currentTime + 0.04);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + n.dur);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + n.dur + 0.05);
+      }, n.delay);
+    });
+    // Cheeky giggle on top (high blips)
+    setTimeout(() => {
+      [880, 1175, 988, 1318].forEach((f, i) => {
+        setTimeout(() => playTone(f, 0.07, 'square', 0.12), i * 70);
+      });
+    }, 1100);
+  }
   // === End Sound Effects ===
 
   let prevStatus = null;
@@ -130,13 +162,25 @@
     const prevKey = prevSpotlight ? `${prevSpotlight.type}-${prevSpotlight.at}` : null;
     if (spotlight && spotlightKey !== prevKey) {
       if (spotlight.type === 'fee_warning') {
-        showDramaticFlash('danger');
-        sfxToll();
+        const space = gameState.board?.[spotlight.spaceIndex];
+        const isSeoulUpgraded = space?.id === 'seoul' && space?.upgraded;
+        if (isSeoulUpgraded) {
+          showAnnounceBanner('비싼 통행료! 😜', 'mini');
+          sfxSecretSwap();
+          launchMiniConfetti();
+        } else {
+          showDramaticFlash('danger');
+          sfxToll();
+        }
       } else if (spotlight.type === 'mini') {
         showAnnounceBanner('MINI GAME!', 'mini');
         sfxMiniGame();
       } else if (spotlight.type === 'start') {
         sfxStart();
+      } else if (spotlight.type === 'secret_swap') {
+        showAnnounceBanner('점수 교체! 😜', 'mini');
+        sfxSecretSwap();
+        launchMiniConfetti();
       }
     }
 

@@ -274,6 +274,27 @@ function collectFee(payer, ownerTeamId, city) {
   addLog(`${payer.name}이(가) ${city.label || city.name}에 착지하여 ${owner.name}에게 ${amount}포인트를 지불했습니다.${balanceNote}`, 'fee');
 }
 
+function triggerSecretSwap(landingTeam) {
+  if (!landingTeam) return;
+  const ranked = [...state.teams].sort((a, b) => b.points - a.points);
+  const leader = ranked[0];
+  if (!leader || leader.id === landingTeam.id) return;
+  if (leader.points === landingTeam.points) return;
+  const leaderPts = leader.points;
+  const landingPts = landingTeam.points;
+  leader.points = landingPts;
+  landingTeam.points = leaderPts;
+  state.game.spotlight = {
+    type: 'secret_swap',
+    teamId: landingTeam.id,
+    leaderTeamId: leader.id,
+    landingTeamPoints: leaderPts,
+    leaderTeamPoints: landingPts,
+    at: now()
+  };
+  addLog(`✨ 숨겨진 규칙 발동! ${landingTeam.name}이(가) START에 도착하여 1등 ${leader.name}과(와) 점수를 교체했습니다. (${landingPts} ↔ ${leaderPts})`, 'system');
+}
+
 function setLandingSpotlight(team, landing, newPosition) {
   state.game.lastLanding = { teamId: team.id, spaceIndex: newPosition, spaceName: landing.name, type: landing.type, at: now() };
 
@@ -320,6 +341,7 @@ function setLandingSpotlight(team, landing, newPosition) {
       state.game.spotlight = { type: 'start', teamId: team.id, at: now() };
     }
     addLog(`${team.name}이(가) START에 착지했습니다.`, 'start');
+    triggerSecretSwap(team);
   }
 
   if (landing.type === 'empty') {
@@ -684,7 +706,7 @@ app.post('/api/admin/clear-spotlight', (_req, res) => mutate(res, () => {
 }));
 
 
-const TUTORIAL_SLIDE_COUNT = 9;
+const TUTORIAL_SLIDE_COUNT = 10;
 
 app.post('/api/admin/tutorial-start', (_req, res) => mutate(res, () => {
   state.game.tutorial = { slide: 0 };
