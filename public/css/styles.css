@@ -402,8 +402,8 @@ a { color: inherit; }
   position: relative;
   width: 360px; height: 360px;
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  grid-template-rows: repeat(6, 1fr);
+  grid-template-columns: repeat(5, 1fr);
+  grid-template-rows: repeat(5, 1fr);
   gap: 3px;
   padding: 6px;
   background: #f4f6fa;
@@ -458,7 +458,7 @@ a { color: inherit; }
 }
 .broadcast-shell {
   display: grid;
-  grid-template-columns: 400px 1fr;
+  grid-template-columns: 460px 1fr;
   gap: 32px;
   padding: 16px;
   height: 100vh;
@@ -478,8 +478,10 @@ a { color: inherit; }
   flex-direction: column;
   gap: 14px;
   height: 100%;
-  overflow: hidden;
+  overflow: visible;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+  position: relative;
+  z-index: 1;
 }
 
 /* Large Current Turn Card (prominent) */
@@ -496,12 +498,12 @@ a { color: inherit; }
   flex-shrink: 0;
 }
 .brand-logo-wrap {
-  margin-bottom: 12px;
+  margin-bottom: 6px;
   text-align: center;
 }
 .brand-logo {
   width: 100%;
-  max-width: 260px;
+  max-width: 200px;
   height: auto;
   object-fit: contain;
   filter: drop-shadow(0 4px 14px rgba(0, 0, 0, 0.25));
@@ -518,9 +520,12 @@ a { color: inherit; }
   font-family: var(--font-en);
   color: #fff;
   margin-bottom: 12px;
+}
+.round-line {
   display: flex;
-  flex-direction: column;
-  gap: 6px;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
 }
 .round-label {
   font-size: 14px;
@@ -528,25 +533,36 @@ a { color: inherit; }
   letter-spacing: 0.12em;
   opacity: 0.7;
 }
-.round-progress-bar {
-  height: 8px;
-  background: rgba(255, 255, 255, 0.15);
-  border-radius: 999px;
-  overflow: hidden;
-}
-.round-progress-fill {
-  height: 100%;
-  background: linear-gradient(90deg, #0176d3, #00b3ff);
-  border-radius: 999px;
-  transition: width 0.5s ease;
-}
-.round-nums {
-  font-size: 28px;
-  font-weight: 800;
-}
 .round-current {
-  font-size: 36px;
+  font-size: 32px;
+  font-weight: 800;
   color: #00b3ff;
+  line-height: 1;
+}
+.round-team {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  border: 2px solid var(--team-color, var(--sf-blue));
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08), 0 2px 6px rgba(0, 0, 0, 0.18);
+  margin-left: auto;
+}
+.round-team-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--team-color, var(--sf-blue));
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.85);
+  flex-shrink: 0;
+}
+.round-team-name {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
 }
 .ct-main {
   display: flex;
@@ -621,10 +637,9 @@ a { color: inherit; }
 .ranking-list {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  overflow-y: auto;
-  overflow-x: visible;
-  padding-right: 4px;
+  gap: 8px;
+  overflow: visible;
+  padding: 6px 4px;
   flex: 1;
   min-height: 0;
   scrollbar-width: none;
@@ -641,12 +656,42 @@ a { color: inherit; }
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 10px;
   border-left: 4px solid var(--team-color, var(--sf-blue));
-  transition: background 0.15s;
+  transition: background 0.25s ease, transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease;
+  transform-origin: left center;
+  z-index: 0;
 }
 .rank-row.is-current {
   grid-template-columns: 40px 1fr auto auto;
-  background: rgba(255, 255, 255, 0.18);
-  box-shadow: 0 0 0 2px var(--team-color, var(--sf-blue)) inset, 0 4px 12px rgba(0, 0, 0, 0.18);
+  background: rgba(20, 35, 75, 0.92);
+  box-shadow:
+    0 0 0 2px var(--team-color, var(--sf-blue)) inset,
+    0 0 0 4px rgba(255, 255, 255, 0.12),
+    0 8px 22px rgba(0, 0, 0, 0.28),
+    0 0 28px var(--team-color, var(--sf-blue));
+  transform: scale(1.08);
+  transform-origin: center center;
+  z-index: 100;
+  animation: rank-current-pulse 1.8s ease-in-out infinite;
+}
+@keyframes rank-current-pulse {
+  0%, 100% {
+    box-shadow:
+      0 0 0 2px var(--team-color, var(--sf-blue)) inset,
+      0 0 0 4px rgba(255, 255, 255, 0.12),
+      0 8px 22px rgba(0, 0, 0, 0.28),
+      0 0 24px var(--team-color, var(--sf-blue));
+  }
+  50% {
+    box-shadow:
+      0 0 0 2px var(--team-color, var(--sf-blue)) inset,
+      0 0 0 5px rgba(255, 255, 255, 0.22),
+      0 10px 28px rgba(0, 0, 0, 0.32),
+      0 0 40px var(--team-color, var(--sf-blue));
+  }
+}
+.rank-row.is-current .rank-badge {
+  background: var(--team-color, var(--sf-blue));
+  color: #fff;
 }
 .rank-row.is-finished {
   border: 2px solid rgba(255, 255, 255, 0.3);
@@ -716,8 +761,8 @@ a { color: inherit; }
 
 .game-board {
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  grid-template-rows: repeat(6, 1fr);
+  grid-template-columns: repeat(5, 1fr);
+  grid-template-rows: repeat(5, 1fr);
   gap: 6px;
   width: min(100%, calc(100vh - 32px));
   height: min(100%, calc(100vh - 32px));
@@ -737,8 +782,8 @@ a { color: inherit; }
 }
 
 .center-panel {
-  grid-column: 2 / 6;
-  grid-row: 2 / 6;
+  grid-column: 2 / 5;
+  grid-row: 2 / 5;
   background: #fff;
   border-radius: 14px;
   box-shadow: var(--shadow);
@@ -1029,6 +1074,31 @@ a { color: inherit; }
 }
 .tile-start .tile-name { color: #fff; }
 .tile-start .tile-subtitle { color: var(--start-accent); opacity: 1; font-weight: 700; font-family: var(--font-en); }
+.tile-start .tile-body { position: relative; }
+.start-sparkle,
+.seoul-sparkle {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 53%;
+  max-width: 78px;
+  height: auto;
+  object-fit: contain;
+  pointer-events: none;
+  filter: drop-shadow(0 3px 8px rgba(0, 0, 0, 0.4)) drop-shadow(0 0 12px rgba(245, 184, 0, 0.5));
+  animation: start-sparkle-bounce 1.6s ease-in-out infinite;
+  z-index: 2;
+}
+.tile.mini-tile .start-sparkle,
+.tile.mini-tile .seoul-sparkle {
+  width: 45%;
+  top: 2px;
+  right: 2px;
+}
+@keyframes start-sparkle-bounce {
+  0%, 100% { transform: scale(1) rotate(-3deg); opacity: 0.95; }
+  50% { transform: scale(1.12) rotate(6deg); opacity: 1; }
+}
 
 /* Mini board variant (admin preview) */
 .tile.mini-tile {
@@ -1045,7 +1115,7 @@ a { color: inherit; }
 .tile.mini-tile .tile-name.mini-name { font-size: 10px; line-height: 1; }
 
 /* =========================== CENTER SPOTLIGHT =========================== */
-.center-moving, .center-start-pass, .center-roll, .center-default, .center-mini-static, .center-ended, .center-city {
+.center-moving, .center-start-pass, .center-roll, .center-default, .center-mini-static, .center-ended, .center-city, .center-secret-swap {
   width: 100%;
   height: 100%;
   display: flex;
@@ -1146,6 +1216,105 @@ a { color: inherit; }
   font-size: 32px;
   font-weight: 800;
   color: #EA001E;
+}
+.center-secret-swap {
+  background: linear-gradient(135deg, #FFE066 0%, #F5B800 60%, #E89F00 100%);
+  color: #1B2A6B;
+  padding: 36px 48px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  position: relative;
+  overflow: hidden;
+}
+.center-secret-swap::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 30% 20%, rgba(255,255,255,0.45), transparent 50%);
+  pointer-events: none;
+}
+.secret-swap-celebration {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 120%;
+  max-width: 720px;
+  height: auto;
+  transform: translate(-50%, -50%);
+  opacity: 0.18;
+  pointer-events: none;
+  animation: secret-swap-celebrate-spin 6s linear infinite;
+  z-index: 0;
+}
+@keyframes secret-swap-celebrate-spin {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+.secret-swap-sparkle {
+  width: 110px;
+  height: auto;
+  filter: drop-shadow(0 6px 14px rgba(0,0,0,0.25));
+  animation: start-sparkle-bounce 1.4s ease-in-out infinite;
+  position: relative;
+  z-index: 1;
+}
+.secret-swap-title {
+  font-family: var(--font-en);
+  font-size: 44px;
+  font-weight: 900;
+  margin: 0;
+  text-shadow: 0 3px 8px rgba(255,255,255,0.6);
+  position: relative;
+}
+.secret-swap-sub {
+  font-size: 22px;
+  font-weight: 700;
+  margin: 0;
+  opacity: 0.85;
+  position: relative;
+}
+.secret-swap-row {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  margin-top: 10px;
+  position: relative;
+}
+.secret-swap-team {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255,255,255,0.95);
+  border-radius: 18px;
+  padding: 18px 24px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.18);
+  min-width: 180px;
+}
+.secret-swap-pts {
+  font-family: var(--font-en);
+  font-size: 40px;
+  font-weight: 900;
+  color: #032D60;
+  line-height: 1;
+}
+.secret-swap-pts span {
+  font-size: 18px;
+  margin-left: 4px;
+  opacity: 0.7;
+}
+.secret-swap-arrow {
+  font-size: 56px;
+  font-weight: 900;
+  color: #1B2A6B;
+  text-shadow: 0 2px 6px rgba(255,255,255,0.7);
+  animation: secret-swap-arrow-pulse 1.2s ease-in-out infinite;
+}
+@keyframes secret-swap-arrow-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.18); }
 }
 .center-roll {
   background: var(--team-color, #0176d3);
@@ -1441,6 +1610,26 @@ a { color: inherit; }
   object-fit: contain;
   filter: drop-shadow(0 4px 12px rgba(0,0,0,0.2));
   pointer-events: none;
+}
+.tutorial-sparkle {
+  position: absolute;
+  top: -40px;
+  right: -20px;
+  width: 200px;
+  height: 200px;
+  object-fit: contain;
+  filter: drop-shadow(0 6px 18px rgba(245, 184, 0, 0.55));
+  pointer-events: none;
+  animation: tutorial-sparkle-bounce 1.8s ease-in-out infinite;
+}
+@keyframes tutorial-sparkle-bounce {
+  0%, 100% { transform: scale(1) rotate(-6deg); }
+  50% { transform: scale(1.12) rotate(8deg); }
+}
+.tutorial-secret-card {
+  background: linear-gradient(160deg, rgba(255, 245, 200, 1) 0%, rgba(255, 255, 255, 1) 60%);
+  border: 2px solid rgba(245, 184, 0, 0.5);
+  box-shadow: 0 12px 40px rgba(245, 184, 0, 0.25), 0 0 0 1px rgba(245, 184, 0, 0.1);
 }
 .tutorial-body-small {
   font-size: 20px;
@@ -1998,45 +2187,6 @@ a { color: inherit; }
   100% { opacity: 0; }
 }
 
-/* Countdown Timer */
-.game-timer-display {
-  margin-top: auto;
-  padding: 12px 16px;
-  text-align: center;
-  font-family: var(--font-en);
-  font-size: 28px;
-  font-weight: 700;
-  color: rgba(255, 255, 255, 0.9);
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: 14px;
-  letter-spacing: 0.02em;
-}
-.game-timer-display.hidden { display: none; }
-.game-timer-display.game-timer-warn {
-  color: #ffab00;
-  background: rgba(255, 171, 0, 0.12);
-  border-color: rgba(255, 171, 0, 0.4);
-  animation: timerPulse 2s ease-in-out infinite;
-}
-.game-timer-display.game-timer-critical {
-  color: #ff6b6b;
-  font-size: 34px;
-  background: rgba(234, 0, 30, 0.15);
-  border-color: rgba(234, 0, 30, 0.4);
-  animation: timerPulse 0.8s ease-in-out infinite;
-}
-.game-timer-display.game-timer-expired {
-  color: #ff6b6b;
-  font-size: 34px;
-  background: rgba(234, 0, 30, 0.15);
-  border-color: rgba(234, 0, 30, 0.4);
-  animation: timerPulse 0.5s ease-in-out 3;
-}
-@keyframes timerPulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.05); }
-}
 
 /* Seoul special shimmer effect */
 .seoul-spotlight .seoul-shimmer {
@@ -2061,6 +2211,42 @@ a { color: inherit; }
 }
 .seoul-spotlight .city-hero-title h2 {
   text-shadow: 0 0 12px rgba(255, 215, 0, 0.6), 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+/* High-tier city tiles — white glow + shimmer */
+.tile.high-tier-glow {
+  box-shadow: var(--tile-shadow), 0 0 14px rgba(255, 255, 255, 0.45), 0 0 32px rgba(255, 255, 255, 0.2);
+  animation: highTierGlow 2.5s ease-in-out infinite;
+  position: relative;
+  overflow: hidden;
+}
+.tile.high-tier-glow::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  background: linear-gradient(
+    105deg,
+    transparent 35%,
+    rgba(255, 255, 255, 0.25) 42%,
+    rgba(255, 255, 255, 0.5) 50%,
+    rgba(255, 255, 255, 0.25) 58%,
+    transparent 65%
+  );
+  background-size: 250% 100%;
+  background-position: 200% 0;
+  animation: highTierShimmer 8s ease-in-out infinite;
+}
+@keyframes highTierGlow {
+  0%, 100% { box-shadow: var(--tile-shadow), 0 0 14px rgba(255, 255, 255, 0.45), 0 0 32px rgba(255, 255, 255, 0.2); }
+  50% { box-shadow: var(--tile-shadow), 0 0 22px rgba(255, 255, 255, 0.65), 0 0 48px rgba(255, 255, 255, 0.3); }
+}
+@keyframes highTierShimmer {
+  0%, 85% { background-position: 200% 0; opacity: 0; }
+  86% { opacity: 1; }
+  95% { background-position: -200% 0; opacity: 1; }
+  96%, 100% { background-position: -200% 0; opacity: 0; }
 }
 
 /* Seoul tile on board — glow + shimmer when upgraded */

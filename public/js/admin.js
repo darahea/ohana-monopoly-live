@@ -35,8 +35,6 @@
     renderCityTable(gameState);
     renderLog(gameState);
     renderBoard({ gameState, layerId: 'adminBoardTiles', centerId: null, mini: true });
-    const roundsSelect = $('maxRoundsSelect');
-    if (roundsSelect) roundsSelect.value = String(gameState.settings.maxRounds || 3);
     const tutActive = Boolean(gameState.game?.tutorial);
     const tutPrev = $('tutorialPrevBtn');
     const tutNext = $('tutorialNextBtn');
@@ -46,8 +44,6 @@
     if (tutNext) tutNext.disabled = !tutActive;
     if (tutReset) tutReset.disabled = !tutActive;
     if (tutClose) tutClose.disabled = !tutActive;
-    const durationInput = $('gameDurationInput');
-    if (durationInput) durationInput.value = String(gameState.settings.gameDurationMinutes || 110);
   }
 
   function renderSummary(gameState, activeTeam) {
@@ -57,7 +53,7 @@
     const moving = gameState.game.moving;
     $('adminSummary').innerHTML = `
       <div class="summary-line"><span>상태</span><strong>${moving ? '이동 중' : gameStatusLabel(gameState.game.status)}</strong></div>
-      <div class="summary-line"><span>총 라운드</span><strong>${gameState.settings.maxRounds || '—'}</strong></div>
+      <div class="summary-line"><span>현재 라운드</span><strong>${gameState.game.round || 1}</strong></div>
       <div class="summary-line"><span>현재 팀</span><strong>${escapeHtml(activeTeam?.name || '—')}</strong></div>
       <div class="summary-line"><span>위치</span><strong>${escapeHtml(formatPosition(gameState, activeTeam?.position || 0))}</strong></div>
       <div class="summary-line"><span>팀 수</span><strong>${gameState.teams.length}</strong></div>
@@ -262,11 +258,6 @@
   }
 
   function initButtons() {
-    $('setMaxRoundsBtn').addEventListener('click', (event) => withButton(event.currentTarget, async () => {
-      await run('/api/admin/set-max-rounds', { maxRounds: Number($('maxRoundsSelect').value) });
-      showToast('라운드가 설정되었습니다.');
-    }));
-
     $('startGameBtn').addEventListener('click', (event) => withButton(event.currentTarget, async () => {
       await run('/api/admin/start-game');
       showToast('게임이 시작되었습니다.');
@@ -304,6 +295,11 @@
       showToast('스포트라이트를 제거했습니다.');
     }));
 
+    $('forceMiniGameBtn').addEventListener('click', (event) => withButton(event.currentTarget, async () => {
+      await run('/api/admin/force-mini-game');
+      showToast('미니게임이 시작되었습니다.');
+    }));
+
     $('clearMiniGameBtn').addEventListener('click', (event) => withButton(event.currentTarget, async () => {
       await run('/api/admin/clear-mini-game');
       showToast('미니게임을 제거했습니다.');
@@ -337,12 +333,6 @@
       }));
     }
 
-    $('setGameDurationBtn').addEventListener('click', (event) => withButton(event.currentTarget, async () => {
-      const minutes = Number($('gameDurationInput').value);
-      if (!minutes || minutes < 1 || minutes > 180) { showToast('1~180분 사이로 입력하세요.'); return; }
-      await run('/api/admin/set-game-duration', { minutes });
-      showToast(`게임 시간 ${minutes}분으로 설정`);
-    }));
   }
 
   function initForms() {

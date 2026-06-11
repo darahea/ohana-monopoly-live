@@ -97,6 +97,38 @@
     playTone(660, 0.1, 'sine', 0.15);
     setTimeout(() => playTone(880, 0.12, 'sine', 0.15), 80);
   }
+
+  // Sad-trombone-style "wah-wah-waaah" — playful, mocking
+  function sfxSecretSwap() {
+    const ctx = getAudioCtx();
+    const notes = [
+      { freq: 392.00, dur: 0.22, delay: 0,    slideTo: 369.99 }, // G4 → F#4
+      { freq: 369.99, dur: 0.22, delay: 230,  slideTo: 349.23 }, // F#4 → F4
+      { freq: 349.23, dur: 0.55, delay: 470,  slideTo: 311.13 }  // F4 → Eb4 (drawn out)
+    ];
+    notes.forEach((n) => {
+      setTimeout(() => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(n.freq, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(n.slideTo, ctx.currentTime + n.dur);
+        gain.gain.setValueAtTime(0.001, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.28, ctx.currentTime + 0.04);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + n.dur);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + n.dur + 0.05);
+      }, n.delay);
+    });
+    // Cheeky giggle on top (high blips)
+    setTimeout(() => {
+      [880, 1175, 988, 1318].forEach((f, i) => {
+        setTimeout(() => playTone(f, 0.07, 'square', 0.12), i * 70);
+      });
+    }, 1100);
+  }
   // === End Sound Effects ===
 
   let prevStatus = null;
@@ -107,54 +139,6 @@
   let prevMovingStep = null;
   const trendMap = {}; // { teamId: { direction: 'up'|'down', at: timestamp } }
 
-  // Game timer state
-  let gameTimerInterval = null;
-  let gameTimerEndAt = null;
-  let gameTimerExpired = false;
-
-  function updateGameTimer() {
-    const display = $('gameTimerDisplay');
-    if (!display || !gameTimerEndAt) return;
-    const remaining = Math.max(0, Math.ceil((new Date(gameTimerEndAt).getTime() - Date.now()) / 1000));
-    if (remaining <= 0 && !gameTimerExpired) {
-      gameTimerExpired = true;
-      display.textContent = "TIME OVER";
-      display.classList.add('game-timer-expired');
-      clearInterval(gameTimerInterval);
-      gameTimerInterval = null;
-      api('/api/admin/time-over').catch(() => {});
-      return;
-    }
-    if (remaining > 0) {
-      const mins = Math.floor(remaining / 60);
-      const secs = remaining % 60;
-      display.textContent = `⏱ ${mins}:${String(secs).padStart(2, '0')}`;
-      display.classList.remove('game-timer-expired');
-      display.classList.toggle('game-timer-warn', remaining <= 300 && remaining > 60);
-      display.classList.toggle('game-timer-critical', remaining <= 60);
-    }
-  }
-
-  function syncGameTimer(gameState) {
-    const display = $('gameTimerDisplay');
-    if (!display) return;
-    const gameTimer = gameState.game?.gameTimer;
-    if (gameTimer && gameTimer.endAt && gameState.game.status === 'active') {
-      display.classList.remove('hidden');
-      if (gameTimerEndAt !== gameTimer.endAt) {
-        gameTimerEndAt = gameTimer.endAt;
-        gameTimerExpired = false;
-        if (gameTimerInterval) clearInterval(gameTimerInterval);
-        gameTimerInterval = setInterval(updateGameTimer, 1000);
-        updateGameTimer();
-      }
-    } else {
-      display.classList.add('hidden');
-      if (gameTimerInterval) { clearInterval(gameTimerInterval); gameTimerInterval = null; }
-      gameTimerEndAt = null;
-      gameTimerExpired = false;
-    }
-  }
 
   function render(gameState) {
     const isActive = gameState.game.status === 'active';
@@ -163,7 +147,6 @@
     renderRanking(gameState, activeTeam);
     renderBoard({ gameState, layerId: 'tilesLayer', centerId: 'centerSpotlight' });
     renderTutorialOverlay(gameState);
-    syncGameTimer(gameState);
 
     if (prevStatus && prevStatus !== 'active' && gameState.game.status === 'active') {
       showGameStartOverlay();
@@ -179,13 +162,25 @@
     const prevKey = prevSpotlight ? `${prevSpotlight.type}-${prevSpotlight.at}` : null;
     if (spotlight && spotlightKey !== prevKey) {
       if (spotlight.type === 'fee_warning') {
-        showDramaticFlash('danger');
-        sfxToll();
+        const space = gameState.board?.[spotlight.spaceIndex];
+        const isSeoulUpgraded = space?.id === 'seoul' && space?.upgraded;
+        if (isSeoulUpgraded) {
+          showAnnounceBanner('비싼 통행료! 😜', 'mini');
+          sfxSecretSwap();
+          launchMiniConfetti();
+        } else {
+          showDramaticFlash('danger');
+          sfxToll();
+        }
       } else if (spotlight.type === 'mini') {
         showAnnounceBanner('MINI GAME!', 'mini');
         sfxMiniGame();
       } else if (spotlight.type === 'start') {
         sfxStart();
+      } else if (spotlight.type === 'secret_swap') {
+        showAnnounceBanner('점수 교체! 😜', 'mini');
+        sfxSecretSwap();
+        launchMiniConfetti();
       }
     }
 
@@ -366,46 +361,51 @@
   }
 
   function renderRoundDisplay(gameState, activeTeam) {
-    const maxRounds = gameState.settings?.maxRounds || 3;
-    if (!activeTeam) {
-      $('roundDisplay').innerHTML = `<div class="round-label">ROUND</div>
-        <div class="round-progress-bar"><div class="round-progress-fill" style="width:0%"></div></div>
-        <div class="round-nums">— / ${maxRounds}</div>`;
-      return;
-    }
-    const currentLap = Math.min((gameState.game?.laps?.[activeTeam?.id] || 0) + 1, maxRounds);
-    const pct = Math.round((currentLap / maxRounds) * 100);
-    $('roundDisplay').innerHTML = `<div class="round-label">ROUND</div>
-      <div class="round-progress-bar"><div class="round-progress-fill" style="width:${pct}%"></div></div>
-      <div class="round-nums"><span class="round-current">${currentLap}</span> / ${maxRounds}</div>`;
+    const round = gameState.game?.round || 1;
+    const teamHtml = activeTeam
+      ? `<div class="round-team" style="--team-color:${escapeHtml(activeTeam.color)}">
+          <span class="round-team-dot"></span>
+          <span class="round-team-name">${escapeHtml(activeTeam.name)}</span>
+        </div>`
+      : '';
+    $('roundDisplay').innerHTML = `<div class="round-line">
+        <span class="round-label">ROUND</span>
+        <span class="round-current">${round}</span>
+        ${teamHtml}
+      </div>`;
   }
 
   function renderRanking(gameState, activeTeam) {
-    // Sort teams by points descending; preserve team order as tiebreak
-    const ranked = [...gameState.teams]
+    // Compute rank by points (for badge), but render rows in team-number order
+    const sortedByPoints = [...gameState.teams]
       .map((team, originalIdx) => ({ team, originalIdx }))
       .sort((a, b) => b.team.points - a.team.points || a.originalIdx - b.originalIdx);
+    const rankByTeamId = {};
+    for (let i = 0; i < sortedByPoints.length; i++) {
+      const prev = i > 0 ? sortedByPoints[i - 1] : null;
+      const rank = (prev && sortedByPoints[i].team.points === prev.team.points)
+        ? rankByTeamId[prev.team.id]
+        : i + 1;
+      rankByTeamId[sortedByPoints[i].team.id] = rank;
+    }
 
     const finished = gameState.game?.finished || [];
-    const ranks = [];
-    for (let i = 0; i < ranked.length; i++) {
-      ranks[i] = (i === 0 || ranked[i].team.points !== ranked[i - 1].team.points) ? i + 1 : ranks[i - 1];
-    }
     const now = Date.now();
-    $('rankingList').innerHTML = ranked.map(({ team }, idx) => {
+    $('rankingList').innerHTML = gameState.teams.map((team) => {
       const isCurrent = activeTeam?.id === team.id;
       const isFinished = finished.includes(team.id);
       const towers = gameState.board.filter((s) => s.type === 'city' && s.ownerTeamId === team.id).length;
-      const rankLabel = ordinal(ranks[idx]);
+      const rankLabel = ordinal(rankByTeamId[team.id]);
       const rowClass = isFinished ? 'is-finished' : isCurrent ? 'is-current' : '';
       const trend = trendMap[team.id];
       const trendHtml = (trend && now - trend.at < 3000)
         ? `<span class="rank-trend rank-trend-${trend.direction}">${trend.direction === 'up' ? '▲' : '▼'}</span>`
         : '';
+      const teamNum = parseInt(team.id.replace('team-', ''), 10);
       return `<div class="rank-row ${rowClass}" data-team-id="${escapeHtml(team.id)}" style="--team-color:${escapeHtml(team.color)}">
         <div class="rank-badge">${rankLabel}</div>
         <div class="rank-team">
-          <strong>${escapeHtml(team.name)}</strong>
+          <strong>Team #${teamNum}: ${escapeHtml(team.name)}</strong>
           <span>${towers} tower${towers !== 1 ? 's' : ''}</span>
         </div>
         ${isCurrent ? '<img src="/assets/astro.png" alt="" class="rank-astro" />' : ''}
